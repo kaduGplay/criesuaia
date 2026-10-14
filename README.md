@@ -7,7 +7,7 @@ Todos os arquivos de imagens, fontes, vozes e vídeos ficam em `public/`. Quiz, 
 ## Variáveis de ambiente (Vercel → Settings → Environment Variables)
 
 - `VOIDPAY_PUBLIC_KEY` e `VOIDPAY_SECRET_KEY`: chaves da conta VoidPay, somente no servidor.
-- `UPSTASH_REDIS_REST_URL` e `UPSTASH_REDIS_REST_TOKEN`: crie um Redis Upstash na integração/Marketplace da Vercel. Deve usar persistência, sem expiração automática ou eviction dos pedidos.
+- `UPSTASH_REDIS_REST_URL` e `UPSTASH_REDIS_REST_TOKEN` (ou `KV_REST_API_URL` e `KV_REST_API_TOKEN` injetados pela integração): crie um Redis Upstash na integração/Marketplace da Vercel. Deve usar persistência, sem expiração automática ou eviction dos pedidos.
 - `VOIDPAY_CALLBACK_URL`: `https://SEU-DOMINIO/api/voidpay/webhook`.
 - `GATEWAY_WEBHOOK_TOKEN`: token global do painel quando aplicável; tokens por cobrança retornados pela VoidPay são armazenados e validados automaticamente.
 
