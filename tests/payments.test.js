@@ -28,3 +28,8 @@ test('PIX, repetição, webhook e persistência com Supabase simulado',async()=>
   assert.equal((await webhook(event)).duplicate,false);assert.equal((await webhook(event)).duplicate,true);
  }finally{global.fetch=fetchOriginal;for(const name of ['VOIDPAY_PUBLIC_KEY','VOIDPAY_SECRET_KEY','VOIDPAY_CALLBACK_URL','SUPABASE_URL','SUPABASE_SECRET_KEY'])delete process.env[name]}
 });
+
+test('e-mail ausente interrompe cobrança antes de qualquer envio',async()=>{
+ const original=global.fetch;let called=false;global.fetch=async()=>{called=true;throw Error('unexpected')};
+ try{await assert.rejects(createPayment({name:'Cliente Teste',email:'',sid:'session'}),e=>e.field==='email'&&e.status===400);assert.equal(called,false)}finally{global.fetch=original}
+});
