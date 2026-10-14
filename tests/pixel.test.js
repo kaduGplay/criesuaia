@@ -1,0 +1,22 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+test('pixel único e Purchase só após status pago, sem duplicatas',async()=>{
+ const storage=new Map(),scripts=[];
+ const window={fetch:async()=>Response.json({status:'pending',amount:1989})};
+ const context={window,document:{createElement:()=>({}),head:{appendChild:x=>scripts.push(x)}},location:{href:'https://example.test/',origin:'https://example.test'},URL,localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)}};
+ vm.runInNewContext(fs.readFileSync(new URL('../public/meta-pixel.js',import.meta.url),'utf8'),context);
+ assert.equal(window.fbq.queue.filter(x=>x[0]==='init').length,1);assert.equal(window.fbq.queue[0][1],'1422813852615307');
+ await window.fetch('/api/checkout?op=status&hash=abc');await new Promise(r=>setTimeout(r,10));
+ assert.equal(window.fbq.queue.filter(x=>x[1]==='Purchase').length,0);
+ // Reload the helper with an already-created SDK and a confirmed backend response.
+ window.fetch=async()=>Response.json({status:'paid',amount:1989,kind:'main'});
+ vm.runInNewContext(fs.readFileSync(new URL('../public/meta-pixel.js',import.meta.url),'utf8'),context);
+ await window.fetch('/api/checkout?op=status&hash=abc');await new Promise(r=>setTimeout(r,10));
+ await window.fetch('/api/checkout?op=status&hash=abc');await new Promise(r=>setTimeout(r,10));
+ const events=window.fbq.queue.filter(x=>x[1]==='Purchase');assert.equal(events.length,1);assert.equal(events[0][2].value,19.89);assert.equal(events[0][3].eventID,'purchase_abc');
+ const bundle=fs.readFileSync(new URL('../public/assets/index-B-OgTTgT.js',import.meta.url),'utf8');
+ assert.ok(bundle.includes('ng=(e,t={},n=wf())=>n,'));
+ assert.ok(!bundle.includes('Gh="1481680676270423"'));
+});

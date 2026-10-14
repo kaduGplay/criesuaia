@@ -21,3 +21,11 @@ O checkout calcula os valores no servidor, gera QR a partir do código PIX e con
 Não migramos pedidos do localhost. Chat e criação de contas na área de membros ainda dependem de serviços não recuperados.
 
 Teste: npm test. Os testes não geram cobranças reais.
+
+## Pixel Meta
+
+Pixel exclusivo: 1422813852615307. PageView é enviado uma vez por carregamento pelo app original; o bootstrap apenas inicializa o pixel. Os eventos customizados do quiz são preservados. InitiateCheckout ocorre ao entrar no checkout; AddPaymentInfo e PixGerado somente após criar PIX; Purchase e PagamentoConfirmado somente após status pago confirmado pelo servidor. Purchase usa valor real do pedido, BRL e eventID purchase_<hash>, com deduplicação entre polling e navegador/servidor. Os MP3 e vídeos não foram alterados por esta integração.
+
+A API de Conversões está preparada, mas requer META_CAPI_ACCESS_TOKEN nas variáveis protegidas da Vercel. Sem token, compras são registradas pelo pixel enquanto a página consulta o status. Com token, o webhook confirmado envia Purchase mesmo com a página fechada. Eventos são persistidos antes da confirmação; falhas de envio retornam 503 ao gateway para solicitar retry, sem desfazer o pagamento. E-mail e telefone enviados à Meta são hashes SHA-256; os cookies fbp/fbc não são hashados. Não se envia CPF. META_TEST_EVENT_CODE é opcional para teste no Events Manager.
+
+Referências: https://developers.facebook.com/docs/meta-pixel/implementation/conversion-tracking/ e https://developers.facebook.com/docs/marketing-api/conversions-api/deduplicate-pixel-and-server-events/
