@@ -10,6 +10,7 @@ Framework: Other. Diretório de saída: public. Node 24. Todas as imagens, fonte
 - VOIDPAY_PUBLIC_KEY e VOIDPAY_SECRET_KEY: chaves do gateway, somente no servidor.
 - VOIDPAY_CALLBACK_URL: URL pública do webhook acima. Cada nova cobrança envia esse callback à VoidPay automaticamente.
 - SUPABASE_URL e SUPABASE_SECRET_KEY: credenciais de servidor do banco autorizado. SUPABASE_SERVICE_ROLE_KEY também é aceito para chaves JWT legadas.
+- VOIDPAY_FALLBACK_EMAIL, VOIDPAY_FALLBACK_PHONE e VOIDPAY_FALLBACK_DOCUMENT: a VoidPay exige e-mail, celular e CPF/CNPJ do cliente. Quando o lead não informa (ou informa inválido) celular ou CPF, esses dados são enviados no lugar. Ficam só na Vercel porque o repositório é público, e não são repassados à Meta como dados do lead.
 - GATEWAY_WEBHOOK_TOKEN: token global quando aplicável. A integração valida prioritariamente o webhookToken retornado pela VoidPay para cada cobrança.
 
 Credenciais nunca devem estar em public/, Git ou logs. O armazenamento usa a tabela exclusiva public.criesuaia_payment_store e a função public.criesuaia_payment_command no projeto Supabase piskou. Os objetos do piskou são preservados. O SQL está em supabase/payments.sql, aplicado como migration criesuaia_payment_storage.
