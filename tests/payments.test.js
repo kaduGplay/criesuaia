@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {parseCustomer,amountCents,createPayment,webhook,gatewayClient} from '../lib/payments.js';
+import {parseCustomer,amountCents,createPayment,webhook,gatewayClient,status} from '../lib/payments.js';
 test('campos opcionais omitidos e valores em centavos',()=>{assert.deepEqual(parseCustomer({name:'Teste',email:'test@example.test',phone:'',document:''}),{name:'Teste',email:'test@example.test'});assert.equal(amountCents(19.89),1989);assert.throws(()=>amountCents(0));assert.throws(()=>amountCents(true));assert.throws(()=>parseCustomer({name:'x'}));assert.throws(()=>parseCustomer({name:'Teste',email:'invalido'}))});
 test('dados ausentes usam o padrão do dono e dados do lead são normalizados',()=>{
  const env={VOIDPAY_FALLBACK_EMAIL:'owner@example.test',VOIDPAY_FALLBACK_PHONE:'(11) 90000-0000',VOIDPAY_FALLBACK_DOCUMENT:'529.982.247-25'};
@@ -50,4 +50,28 @@ test('PIX, repetição, webhook e persistência com Supabase simulado',async()=>
 test('e-mail ausente interrompe cobrança antes de qualquer envio',async()=>{
  const original=global.fetch;let called=false;global.fetch=async()=>{called=true;throw Error('unexpected')};
  try{await assert.rejects(createPayment({name:'Cliente Teste',email:'',sid:'session'}),e=>e.field==='email'&&e.status===400);assert.equal(called,false)}finally{global.fetch=original}
+});
+
+test('cada upsell de 1 clique gera a própria cobrança com o preço do catálogo',async()=>{
+ const fetchOriginal=global.fetch,store=new Map(),charged=[];
+ const env={VOIDPAY_PUBLIC_KEY:'fixture',VOIDPAY_SECRET_KEY:'fixture',VOIDPAY_CALLBACK_URL:'https://example.test/api/voidpay/webhook',SUPABASE_URL:'https://database.example.test',SUPABASE_SECRET_KEY:'sb_secret_fixture',VOIDPAY_FALLBACK_EMAIL:'owner@example.test',VOIDPAY_FALLBACK_PHONE:'11900000000',VOIDPAY_FALLBACK_DOCUMENT:'52998224725'};
+ Object.assign(process.env,env);
+ global.fetch=async(url,opts)=>{
+  if(url.includes('voidpayments')){const p=JSON.parse(opts.body);charged.push([p.products[0].id,p.amount]);return Response.json({status:'OK',transactionId:'tx-'+charged.length,pix:{code:'code-'+charged.length}})}
+  const {p_operation:cmd,p_keys:keys,p_values:values}=JSON.parse(opts.body);let result=null;
+  if(cmd==='GET')result=store.get(keys[0])??null;
+  else if(cmd==='CLAIM'){if(!store.has(keys[0])){store.set(keys[0],values[0]);result='OK'}}
+  else if(cmd==='SET'){store.set(keys[0],values[0]);result='OK'}
+  else if(cmd==='SAVE'){store.set(keys[0],values[0]);store.set(keys[1],values[1]);result=1}
+  return Response.json(result);
+ };
+ try{
+  const base={name:'Teste',email:'test@example.test',sid:'session-upsell'};
+  const whatsapp=await createPayment({...base,upsell:'whatsapp'},'upsell'),video=await createPayment({...base,upsell:'video'},'upsell');
+  assert.deepEqual(charged,[['whatsapp',19.9],['video',14.9]]);assert.notEqual(whatsapp.hash,video.hash);
+  assert.deepEqual(await createPayment({...base,upsell:'whatsapp'},'upsell'),whatsapp);assert.equal(charged.length,2);
+  assert.equal((await status(video.hash)).product,'video');
+  await createPayment({...base,upsell:'vip'},'upsell');assert.deepEqual(charged[2],['vip',29.9]);
+  await assert.rejects(createPayment({...base,upsell:'inexistente'},'upsell'),/Oferta inválida/);
+ }finally{global.fetch=fetchOriginal;for(const name of Object.keys(env))delete process.env[name]}
 });
