@@ -75,3 +75,43 @@ test('cada upsell de 1 clique gera a própria cobrança com o preço do catálog
   await assert.rejects(createPayment({...base,upsell:'inexistente'},'upsell'),/Oferta inválida/);
  }finally{global.fetch=fetchOriginal;for(const name of Object.keys(env))delete process.env[name]}
 });
+
+test('nome curto e celular com +55 vão no formato que a VoidPay aceita',()=>{
+ const env={VOIDPAY_FALLBACK_EMAIL:'owner@example.test',VOIDPAY_FALLBACK_PHONE:'11900000000',VOIDPAY_FALLBACK_DOCUMENT:'52998224725'};
+ assert.equal(gatewayClient({name:'Zé',email:'a@b.co'},env).name,'Zé Cliente');
+ assert.equal(gatewayClient({name:'Carlos',email:'a@b.co'},env).name,'Carlos');
+ assert.equal(gatewayClient({name:'Carlos',phone:'+55 31 98442-7971'},env).phone,'31984427971');
+ assert.equal(gatewayClient({name:'Carlos',phone:'031984427971'},env).phone,'31984427971');
+ assert.equal(gatewayClient({name:'Carlos',phone:'55 99999-9999'},env).phone,'55999999999','DDD 55 (RS) continua igual');
+});
+
+test('VoidPay travada ou recusando: tenta de novo, explica o erro e nunca prende o cliente',async()=>{
+ const fetchOriginal=global.fetch,store=new Map();let gateway=()=>Response.json({}),calls=[];
+ const env={VOIDPAY_PUBLIC_KEY:'fixture',VOIDPAY_SECRET_KEY:'fixture',VOIDPAY_CALLBACK_URL:'https://example.test/api/voidpay/webhook',SUPABASE_URL:'https://database.example.test',SUPABASE_SECRET_KEY:'sb_secret_fixture',VOIDPAY_FALLBACK_EMAIL:'owner@example.test',VOIDPAY_FALLBACK_PHONE:'11900000000',VOIDPAY_FALLBACK_DOCUMENT:'52998224725'};
+ Object.assign(process.env,env);
+ const ok=()=>Response.json({status:'OK',transactionId:'tx-'+calls.length,pix:{code:'code-'+calls.length}});
+ const refuse=path=>Response.json({statusCode:400,details:[{path:path.split('.'),message:'inválido'}]},{status:400});
+ global.fetch=async(url,opts)=>{
+  if(url.includes('voidpayments')){calls.push(JSON.parse(opts.body).client);return gateway(calls.length)}
+  const {p_operation:cmd,p_keys:keys,p_values:values}=JSON.parse(opts.body);let result=null;
+  if(cmd==='GET')result=store.get(keys[0])??null;
+  else if(cmd==='CLAIM'){if(!store.has(keys[0])){store.set(keys[0],values[0]);result='OK'}}
+  else if(cmd==='SET'){store.set(keys[0],values[0]);result='OK'}
+  else if(cmd==='SAVE'){store.set(keys[0],values[0]);store.set(keys[1],values[1]);result=1}
+  else if(cmd==='REJECT'){store.set(keys[1],values[1]);if(store.get(keys[0])===values[0])store.delete(keys[0]);result=1}
+  return Response.json(result);
+ };
+ const body=sid=>({name:'Cliente Teste',email:'test@example.test',sid});
+ try{
+  gateway=n=>{if(n<3)throw new TypeError('timeout');return ok()};
+  assert.equal((await createPayment(body('a'))).pixCode,'code-3');assert.equal(calls.length,3);
+  calls=[];gateway=()=>new Response('',{status:504});
+  await assert.rejects(createPayment(body('b')),e=>e.status===503&&/demorou/.test(e.message));assert.equal(calls.length,4);
+  gateway=()=>ok();assert.ok((await createPayment(body('b'))).pixCode,'o mesmo cliente consegue tentar de novo');
+  calls=[];gateway=()=>refuse('client.name');
+  await assert.rejects(createPayment(body('c')),e=>e.field==='name'&&/nome/.test(e.message));
+  const rejected=[...store.values()].map(v=>{try{return JSON.parse(v)}catch{return null}}).find(o=>o?.status==='rejected'&&o.reason?.[0]?.startsWith('client.name'));assert.ok(rejected);
+  calls=[];gateway=n=>n===1?refuse('client.phone'):ok();
+  await createPayment({...body('d'),phone:'(31) 0000-0000'});assert.equal(calls.length,2);assert.equal(calls[1].phone,'11900000000');
+ }finally{global.fetch=fetchOriginal;for(const name of Object.keys(env))delete process.env[name]}
+});

@@ -28,7 +28,7 @@
     const url = new URL(typeof input === 'string' ? input : input.url, location.href);
     if (url.origin === location.origin && url.pathname.startsWith('/api/')) {
       if (url.pathname === '/api/personagem') return recoverCharacter(input, options);
-      if (url.pathname === '/api/checkout') return originalFetch(input, options);
+      if (url.pathname === '/api/checkout' || url.pathname === '/api/track') return originalFetch(input, options);
       if (url.pathname === '/api/checkout' && url.searchParams.get('op') === 'products') {
         return originalFetch('/api/catalogo.json', {cache:'no-store'});
       }
