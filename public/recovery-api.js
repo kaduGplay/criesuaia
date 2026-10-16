@@ -8,9 +8,12 @@
     '8':['preto','castanho','loiro','cinza','ruivo','azul','roxo','verde','rosa']
   };
   const defaults = {'10':'latina','3':'normal','7':'longo','8':'castanho'};
+  // Body types of the "Defina a silhueta" step mapped to the closest catalog body.
+  const bodyAliases = {curvilinea:'normal', atletica:'fitness', musculosa:'fitness', voluptuosa:'plus-size', magra:'magra'};
   async function recoverCharacter(input, options) {
     const body = options?.body ?? (input instanceof Request ? await input.clone().text() : '{}');
-    const answers = JSON.parse(body || '{}').answers || {};
+    const answers = {...(JSON.parse(body || '{}').answers || {})};
+    answers['3'] = bodyAliases[answers['3']] ?? answers['3'];
     characterCatalog ||= originalFetch('/api/personagens.json').then(r => {
       if (!r.ok) throw new Error('Character catalog unavailable');
       return r.json();
