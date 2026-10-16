@@ -12,10 +12,11 @@ test('dados ausentes usam o padrão do dono e dados do lead são normalizados',(
 test('cobrança não chama gateway com ambiente incompleto',async()=>{delete process.env.VOIDPAY_PUBLIC_KEY;await assert.rejects(createPayment({name:'Teste',email:'test@example.test',sid:'test'}),/Configure as chaves/)});
 test('webhook rejeita eventos inválidos',async()=>{await assert.rejects(webhook({event:'UNKNOWN'}),/Evento inválido/)});
 test('PIX, repetição, webhook e persistência com Supabase simulado',async()=>{
- const fetchOriginal=global.fetch,store=new Map();let issued=0;
+ const fetchOriginal=global.fetch,store=new Map();let issued=0,lookup=null;
  process.env.VOIDPAY_PUBLIC_KEY='fixture';process.env.VOIDPAY_SECRET_KEY='fixture';process.env.VOIDPAY_CALLBACK_URL='https://example.test/api/voidpay/webhook';process.env.SUPABASE_URL='https://database.example.test';process.env.SUPABASE_SECRET_KEY='sb_secret_fixture';
  process.env.VOIDPAY_FALLBACK_EMAIL='owner@example.test';process.env.VOIDPAY_FALLBACK_PHONE='11900000000';process.env.VOIDPAY_FALLBACK_DOCUMENT='52998224725';
  global.fetch=async(url,opts)=>{
+  if(url.includes('/gateway/transactions?id=')){assert.equal(opts.headers['x-secret-key'],'fixture');return lookup&&url.endsWith('id=tx-1')?Response.json(lookup):new Response('{}',{status:404})}
   if(url.includes('voidpayments')){issued++;const p=JSON.parse(opts.body);assert.equal(p.amount,28.80);assert.equal(opts.headers['User-Agent'],'CrieSuaIA-Checkout/1.0');assert.deepEqual(p.client,{name:'Teste',email:'test@example.test',phone:'11900000000',document:'52998224725'});return Response.json({status:'OK',transactionId:'tx-1',webhookToken:'test-token',pix:{code:'fixture-code'}})}
   const {p_operation:cmd,p_keys:keys,p_values:values}=JSON.parse(opts.body);let result;
   assert.equal(opts.headers.apikey,'sb_secret_fixture');
@@ -30,10 +31,19 @@ test('PIX, repetição, webhook e persistência com Supabase simulado',async()=>
   const body={name:'Teste',email:'test@example.test',sid:'session',bumps:['chamadadevoz']};
   const order=await createPayment(body);assert.equal(order.amount,2880);assert.equal(order.pixCode,'fixture-code');assert.ok(!order.token);
   assert.deepEqual(await createPayment(body),order);assert.equal(issued,1);
-  const event={event:'TRANSACTION_PAID',token:'test-token',transaction:{id:'tx-1',identifier:order.hash,status:'COMPLETED',paymentMethod:'PIX',currency:'BRL',amount:28.80},client:{email:'test@example.test',phone:'+5511900000000'},orderItems:[],trackProps:{},offerCode:'',checkoutUrl:'',subscription:null};
-  await assert.rejects(webhook({...event,token:'forged'}),/Token inválido/);
-  await assert.rejects(webhook({...event,transaction:{...event.transaction,amount:0.01}}),/divergente/);
-  assert.equal((await webhook(event)).duplicate,false);const queued=JSON.parse(store.get('pix:meta:event:'+order.hash)).event.user_data;assert.ok(queued.em&&!queued.ph);assert.equal((await webhook(event)).duplicate,true);
+  // The callback only names the transaction; VoidPay's own record decides whether it is paid.
+  const event={transactionId:'tx-1',status:'COMPLETED',client:{email:'test@example.test',phone:'+5511900000000'}};
+  const paidStatus=()=>JSON.parse(store.get('pix:order:'+order.hash)).status;
+  lookup={id:'tx-1',clientIdentifier:order.hash,amount:28.8,currency:'BRL',paymentMethod:'PIX',status:'PENDING',payedAt:null};
+  assert.deepEqual(await webhook(event),{ok:true,status:'PENDING'});assert.equal(paidStatus(),'pending');
+  lookup={...lookup,status:'COMPLETED',payedAt:'2026-10-16T13:49:27.717Z',amount:0.01};await assert.rejects(webhook(event),/divergente/);
+  lookup={...lookup,amount:28.8,clientIdentifier:'outro-pedido'};await assert.rejects(webhook(event),/divergente/);
+  await assert.rejects(webhook({transactionId:'tx-desconhecida'}),/desconhecida/);
+  assert.equal(paidStatus(),'pending');
+  lookup={...lookup,clientIdentifier:order.hash};
+  assert.equal((await webhook(event)).duplicate,false);assert.equal(paidStatus(),'paid');
+  const queued=JSON.parse(store.get('pix:meta:event:'+order.hash)).event;assert.ok(queued.user_data.em&&!queued.user_data.ph);assert.equal(queued.event_time,Math.floor(Date.parse(lookup.payedAt)/1000));
+  assert.equal((await webhook({transaction:{id:'tx-1'}})).duplicate,true);
  }finally{global.fetch=fetchOriginal;for(const name of ['VOIDPAY_PUBLIC_KEY','VOIDPAY_SECRET_KEY','VOIDPAY_CALLBACK_URL','SUPABASE_URL','SUPABASE_SECRET_KEY','VOIDPAY_FALLBACK_EMAIL','VOIDPAY_FALLBACK_PHONE','VOIDPAY_FALLBACK_DOCUMENT'])delete process.env[name]}
 });
 
