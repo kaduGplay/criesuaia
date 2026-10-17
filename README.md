@@ -29,3 +29,14 @@ Pixel exclusivo: 1422813852615307. PageView é enviado uma vez por carregamento 
 A API de Conversões está preparada, mas requer META_CAPI_ACCESS_TOKEN nas variáveis protegidas da Vercel. Sem token, compras são registradas pelo pixel enquanto a página consulta o status. Com token, o webhook confirmado envia Purchase mesmo com a página fechada. Eventos são persistidos antes da confirmação; falhas de envio retornam 503 ao gateway para solicitar retry, sem desfazer o pagamento. E-mail e telefone enviados à Meta são hashes SHA-256; os cookies fbp/fbc não são hashados. Não se envia CPF. META_TEST_EVENT_CODE é opcional para teste no Events Manager.
 
 Referências: https://developers.facebook.com/docs/meta-pixel/implementation/conversion-tracking/ e https://developers.facebook.com/docs/marketing-api/conversions-api/deduplicate-pixel-and-server-events/
+
+## Tela inicial e pedido de e-mail (desativados)
+
+O site abre direto na primeira pergunta, com o título "Crie sua namorada IA em 40 segundos" e a contagem "1 de 7". O e-mail não é pedido em nenhuma etapa: a cobrança na VoidPay vai com VOIDPAY_FALLBACK_EMAIL.
+
+Para voltar, edite em public/assets/index-B-OgTTgT.js as chaves junto de `qzOrder`:
+
+- `qzShowHome=!1` → `qzShowHome=!0` traz de volta a tela inicial (imagem com "Começar a criar agora"). Para ver só uma vez, sem mudar nada, abra o site com `?inicio=1`.
+- `qzAskEmail=!1` → `qzAskEmail=!0` traz de volta a tela de nome e e-mail antes da revelação e o campo de e-mail obrigatório no checkout (o servidor aceita os dois casos).
+
+A versão completa anterior está na tag `backup-com-tela-inicial` do GitHub.

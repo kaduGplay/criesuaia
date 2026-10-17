@@ -47,9 +47,10 @@ test('PIX, repetição, webhook e persistência com Supabase simulado',async()=>
  }finally{global.fetch=fetchOriginal;for(const name of ['VOIDPAY_PUBLIC_KEY','VOIDPAY_SECRET_KEY','VOIDPAY_CALLBACK_URL','SUPABASE_URL','SUPABASE_SECRET_KEY','VOIDPAY_FALLBACK_EMAIL','VOIDPAY_FALLBACK_PHONE','VOIDPAY_FALLBACK_DOCUMENT'])delete process.env[name]}
 });
 
-test('e-mail ausente interrompe cobrança antes de qualquer envio',async()=>{
- const original=global.fetch;let called=false;global.fetch=async()=>{called=true;throw Error('unexpected')};
- try{await assert.rejects(createPayment({name:'Cliente Teste',email:'',sid:'session'}),e=>e.field==='email'&&e.status===400);assert.equal(called,false)}finally{global.fetch=original}
+test('sem e-mail do cliente a cobrança vai com o e-mail padrão do dono',()=>{
+ assert.deepEqual(parseCustomer({name:'Cliente Teste',email:''}),{name:'Cliente Teste'});
+ assert.equal(gatewayClient({name:'Cliente Teste'},{VOIDPAY_FALLBACK_EMAIL:'heitorjosevs@gmail.com',VOIDPAY_FALLBACK_PHONE:'11900000000',VOIDPAY_FALLBACK_DOCUMENT:'52998224725'}).email,'heitorjosevs@gmail.com');
+ assert.throws(()=>parseCustomer({name:'Cliente Teste',email:'sem-arroba'}),/e-mail válido/);
 });
 
 test('cada upsell de 1 clique gera a própria cobrança com o preço do catálogo',async()=>{
