@@ -51,4 +51,4 @@ O funil anterior a essas mudanças está na tag `funil-heitormanja` do GitHub.
 
 ## Estilo anime ou realista
 
-A primeira pergunta é "Escolha o estilo dela" (Realista ou Anime). Com Anime, as perguntas seguintes mostram as fotos em anime (etniaAnime, corpoAnime, seiosAnime, bundaAnime, cabeloAnime, corcabeloAnime e a prévia de fotos). Como no criesuaia.shop, a personagem revelada continua sendo a realista do catálogo. O checkout voltou ao original: a pessoa toca em "Gerar meu PIX".
+A primeira pergunta é "Escolha o estilo dela" (Realista ou Anime). Com Anime, as perguntas seguintes mostram as fotos em anime (etniaAnime, corpoAnime, seiosAnime, bundaAnime, cabeloAnime, corcabeloAnime e a prévia de fotos). A personagem revelada para quem escolhe anime vem de public/anime-results (as personagens anime do Piskou, escolhidas por origem, cor do cabelo, corpo, seios e bumbum); no anime só aparecem as cores preto, castanho e loiro, e a oferta do vídeo é pulada porque essas personagens não têm vídeo. O realista continua com o catálogo atual. O checkout voltou ao original: a pessoa toca em "Gerar meu PIX".

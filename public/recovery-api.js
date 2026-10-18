@@ -10,9 +10,25 @@
   const defaults = {'10':'latina','3':'normal','7':'longo','8':'castanho'};
   // Body types of the "Defina a silhueta" step mapped to the closest catalog body.
   const bodyAliases = {curvilinea:'normal', atletica:'fitness', musculosa:'fitness', voluptuosa:'plus-size', magra:'magra'};
+  // The realistic catalog has no anime characters; anime ones come from the Piskou set in
+  // /anime-results/<origem>_<cor>_<corpo>_<seios>_<bumbum>.webp (images only, no video).
+  const anime = {
+    origin: {asiatica:'asiatica', latina:'latina', europeia:'europeia', afro:'africana'},
+    color: {preto:'preto', castanho:'castanho', loiro:'loira'},
+    body: {normal:'curvilinea', fitness:'atletica', magra:'magra', 'plus-size':'voluptuosa'},
+    breast: {pequenos:'pequenos', medios:'medios', grandes:'grandes', enormes:'xl'},
+    butt: {pequena:'pequeno', media:'medio', grande:'grande', enorme:'grande'},
+  };
+  function animeCharacter(a) {
+    const body = anime.body[a['3']] || 'curvilinea';
+    // Slim anime bodies only exist with medium breasts.
+    const breast = body === 'magra' ? 'medios' : anime.breast[a['4']] || 'medios';
+    return {image: `/anime-results/${anime.origin[a['10']] || 'latina'}_${anime.color[a['8']] || 'castanho'}_${body}_${breast}_${anime.butt[a['5']] || 'medio'}.webp`, video: null};
+  }
   async function recoverCharacter(input, options) {
     const body = options?.body ?? (input instanceof Request ? await input.clone().text() : '{}');
     const answers = {...(JSON.parse(body || '{}').answers || {})};
+    if (answers['0'] === 'anime') return new Response(JSON.stringify(animeCharacter(answers)), {headers:{'Content-Type':'application/json'}});
     answers['3'] = bodyAliases[answers['3']] ?? answers['3'];
     characterCatalog ||= originalFetch('/api/personagens.json').then(r => {
       if (!r.ok) throw new Error('Character catalog unavailable');
