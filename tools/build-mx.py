@@ -59,6 +59,11 @@ sub('"/api/checkout?op=upsell-pix"', '"/api/checkout?op=upsell-pix&site=mx"')
 sub('"ck_catalogo_v2"', '"ck_catalogo_mx2"', 4)
 sub('d="nq_quiz_state"', 'd="nq_quiz_state_mx2"')
 
+# Mexico writes thousands with a comma (37,429) and decimals with a point.
+sub('"🥰 +50.000 IAs listas para ti"', '"🥰 +50,000 IAs listas para ti"')
+sub('highlight:"37.429",after:" usuarios satisfechos!"', 'highlight:"37,429",after:" usuarios satisfechos!"')
+sub('toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})', 'toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"})')
+
 # --- Quiz ------------------------------------------------------------------------
 # Realistic only: no style question, so the quiz opens on the ethnicity and every answer set is realistic
 # (an unanswered style is never "anime").
