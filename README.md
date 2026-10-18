@@ -40,3 +40,11 @@ Para voltar, edite em public/assets/index-B-OgTTgT.js as chaves junto de `qzOrde
 - `qzAskEmail=!1` → `qzAskEmail=!0` traz de volta a tela de nome e e-mail antes da revelação e o campo de e-mail obrigatório no checkout (o servidor aceita os dois casos).
 
 A versão completa anterior está na tag `backup-com-tela-inicial` do GitHub.
+
+## Conversa de amostra e telefone
+
+Depois da revelação, "Conversar Agora" abre uma conversa de amostra: ela manda três mensagens (chamando o cliente pelo nome, conforme o tipo de relação escolhido), uma foto borrada com cadeado e o card "Desbloqueie para ver a foto e continuar conversando" com o preço; o botão leva direto ao checkout e "Ver tudo o que está incluso" abre a página da oferta. O checkout não pede telefone: a VoidPay recebe VOIDPAY_FALLBACK_PHONE (a oferta de WhatsApp continua pedindo o número para a entrega).
+
+Chaves junto de `qzOrder` em public/assets/index-B-OgTTgT.js: `qzTeaserOn=!1` volta a mandar "Conversar Agora" direto para a oferta; `qzAskPhone=!0` volta com o campo de telefone no checkout.
+
+O funil anterior a essas mudanças está na tag `funil-heitormanja` do GitHub.
