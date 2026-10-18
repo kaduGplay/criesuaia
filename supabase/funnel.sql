@@ -11,7 +11,8 @@ create table public.criesuaia_funnel_events (
   meta jsonb,
   utm jsonb,
   device text,
-  country text
+  country text,
+  page text
 );
 create index criesuaia_funnel_created on public.criesuaia_funnel_events(created_at);
 create index criesuaia_funnel_sid on public.criesuaia_funnel_events(sid);

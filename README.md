@@ -52,3 +52,9 @@ O funil anterior a essas mudanças está na tag `funil-heitormanja` do GitHub.
 ## Estilo anime ou realista
 
 A primeira pergunta é "Escolha o estilo dela" (Realista ou Anime). Com Anime, as perguntas seguintes mostram as fotos em anime (etniaAnime, corpoAnime, seiosAnime, bundaAnime, cabeloAnime, corcabeloAnime e a prévia de fotos). A personagem revelada para quem escolhe anime vem de public/anime-results (as personagens anime do Piskou, escolhidas por origem, cor do cabelo, corpo, seios e bumbum); no anime só aparecem as cores preto, castanho e loiro, e a oferta do vídeo é pulada porque essas personagens não têm vídeo. O realista continua com o catálogo atual. O checkout voltou ao original: a pessoa toca em "Gerar meu PIX".
+
+## México (/mexico)
+
+Versão em espanhol do México em https://criesuaia.vercel.app/mexico, gerada a partir do site brasileiro por `python3 tools/build-mx.py` (gera public/assets/index-mx.js e public/mexico/index.html; rode de novo sempre que mudar o bundle brasileiro). Mesmo funil (anime ou realista, silhueta, conversa de amostra, upsells), sem a pergunta de voz, com preços em pesos (lib/catalog-mx.json: MX$ 99 de MX$ 249, bumps MX$ 39, upsells MX$ 49 a 149).
+
+Pagamento pela LiberPay em MXN: SPEI (CLABE para transferir, confirma em segundos) ou OXXO (referência com código de barras, confirma em horas); upsells sempre por SPEI. O servidor troca LIBERPAY_CLIENT_ID + LIBERPAY_CLIENT_SECRET por um token em POST /auth/token e cria a cobrança em POST /payments/deposit; o e-mail do pagador (obrigatório em MXN) é VOIDPAY_FALLBACK_EMAIL. A LiberPay só aceita IPs liberados no painel dela. Webhook a cadastrar no painel da LiberPay: https://criesuaia.vercel.app/api/liberpay/webhook (payment.paid confirma o pedido e envia o Purchase em MXN para a Meta).
