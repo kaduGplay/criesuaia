@@ -3,6 +3,8 @@ import {purchaseEvent,deliverPurchase} from '../lib/meta.js';
 test('Purchase usa valor pago e ID igual ao navegador, dados pessoais hashados',()=>{
  const event=purchaseEvent({hash:'abc',amount:1989,kind:'main'},{email:' Test@Example.test ',phone:'11912345678'},'2026-10-14T12:00:00Z');
  assert.equal(event.event_id,'purchase_abc');assert.equal(event.custom_data.value,19.89);assert.match(event.user_data.em[0],/^[a-f0-9]{64}$/);assert.match(event.user_data.ph[0],/^[a-f0-9]{64}$/);assert.ok(!JSON.stringify(event).includes('test@example.test'));
+ assert.equal(event.custom_data.currency,'BRL');
+ assert.equal(purchaseEvent({hash:'mx',amount:9900,kind:'main',gateway:'liberpay'}).custom_data.currency,'MXN');
 });
 test('CAPI não transmite sem token e verifica recebimento quando configurado',async()=>{
  delete process.env.META_CAPI_ACCESS_TOKEN;assert.equal(await deliverPurchase({}),false);

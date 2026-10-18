@@ -49,6 +49,8 @@ sub('bt=e=>(e/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})',
 sub('kv=1490', 'kv=9900')
 sub('currency:"BRL"', 'currency:"MXN"', 8)
 sub('value:19.9', 'value:99', 3)
+# The checkout's InitiateCheckout also carries the price, in MXN like every other Mexican event.
+sub('vt("InitiateCheckout",void 0,{eventId:`ic_${sr()}`})', 'vt("InitiateCheckout",{value:99,currency:"MXN",content_type:"product",content_ids:["main"],num_items:1},{eventId:`ic_${sr()}`})')
 sub('country:"br"', 'country:"mx"', 2)
 sub('"/api/checkout?op=products"', '"/api/checkout?op=products&site=mx"', 3)
 sub('"/api/checkout?op=pix"', '"/api/checkout?op=pix&site=mx"')

@@ -15,7 +15,8 @@
     let seen = purchases.has(id);
     try { seen ||= localStorage.getItem('meta_' + id) === 'sent'; } catch {}
     if (seen) return;
-    const params = {value:data.amount/100,currency:data.currency||'BRL',order_id:hash,content_type:'product',content_ids:[data.product||(data.kind==='upsell'?'upsell':'main')],num_items:1};
+    // A Mexican order always reports MXN; the page decides only if the status ever comes without a currency.
+    const params = {value:data.amount/100,currency:data.currency||(location.pathname.startsWith('/mexico')?'MXN':'BRL'),order_id:hash,content_type:'product',content_ids:[data.product||(data.kind==='upsell'?'upsell':'main')],num_items:1};
     window.fbq('track', 'Purchase', params, {eventID:id});
     window.fbq('trackCustom', 'PagamentoConfirmado', params, {eventID:'paid_' + hash});
     purchases.add(id);
