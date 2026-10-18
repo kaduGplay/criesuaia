@@ -48,3 +48,7 @@ Depois da revelação, "Conversar Agora" abre uma conversa de amostra: ela manda
 Chaves junto de `qzOrder` em public/assets/index-B-OgTTgT.js: `qzTeaserOn=!1` volta a mandar "Conversar Agora" direto para a oferta; `qzAskPhone=!0` volta com o campo de telefone no checkout.
 
 O funil anterior a essas mudanças está na tag `funil-heitormanja` do GitHub.
+
+## Checkout depois da conversa
+
+"Desbloquear" leva ao checkout, que gera o PIX automaticamente (chave `qzAutoPix`; com `qzAutoPix=!1` volta o botão "Gerar meu PIX"). Se a geração falhar, aparece o checkout com a mensagem de erro e o botão para tentar de novo. O checkout mostra a foto dela e "Desbloquear a <nome> · Fotos + conversa", explica o PIX copia e cola antes do botão e traz os order bumps abaixo dele; não há mais banner nem cronômetro. "← voltar", no checkout e na tela do PIX, volta para a conversa já completa.
