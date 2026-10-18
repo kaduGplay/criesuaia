@@ -1,1 +1,1 @@
-{"name":"criesuaia","private":true,"type":"module","engines":{"node":"24.x"},"scripts":{"test":"node --test tests/*.test.js"}}
+{"name":"criesuaia","private":true,"type":"module","engines":{"node":"24.x"},"scripts":{"test":"node --test tests/*.test.js"},"dependencies":{"undici":"7.24.4"}}
