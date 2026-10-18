@@ -48,3 +48,7 @@ Depois da revelação, "Conversar Agora" abre uma conversa de amostra: ela manda
 Chaves junto de `qzOrder` em public/assets/index-B-OgTTgT.js: `qzTeaserOn=!1` volta a mandar "Conversar Agora" direto para a oferta; `qzAskPhone=!0` volta com o campo de telefone no checkout.
 
 O funil anterior a essas mudanças está na tag `funil-heitormanja` do GitHub.
+
+## Estilo anime ou realista
+
+A primeira pergunta é "Escolha o estilo dela" (Realista ou Anime). Com Anime, as perguntas seguintes mostram as fotos em anime (etniaAnime, corpoAnime, seiosAnime, bundaAnime, cabeloAnime, corcabeloAnime e a prévia de fotos). Como no criesuaia.shop, a personagem revelada continua sendo a realista do catálogo. O checkout voltou ao original: a pessoa toca em "Gerar meu PIX".
