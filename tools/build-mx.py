@@ -55,9 +55,12 @@ sub('"/api/checkout?op=pix"', '"/api/checkout?op=pix&site=mx"')
 sub('"/api/checkout?op=upsell-pix"', '"/api/checkout?op=upsell-pix&site=mx"')
 # Separate saved state, so a visitor of both sites never mixes them.
 sub('"ck_catalogo_v2"', '"ck_catalogo_mx2"', 4)
-sub('d="nq_quiz_state"', 'd="nq_quiz_state_mx"')
+sub('d="nq_quiz_state"', 'd="nq_quiz_state_mx2"')
 
 # --- Quiz ------------------------------------------------------------------------
+# Realistic only: no style question, so the quiz opens on the ethnicity and every answer set is realistic
+# (an unanswered style is never "anime").
+sub('qzOrder=[0,10,3,7,8,1,11,12]', 'qzOrder=[10,3,7,8,1,11,12]')
 sub('highlightWords:["ella","tú","tu","personalidad","molesta"]', 'highlightWords:["ella","tú","tu","personalidad","molesta","silueta"]')
 sub('0:{title:"Elige su estilo",options:{"style-1":{label:"Normal"}', '0:{title:"Elige su estilo",options:{"style-1":{label:"Realista"}')
 sub('3:{title:"¿Cómo es su cuerpo?"', '3:{title:"Define su silueta"')
