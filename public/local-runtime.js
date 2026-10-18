@@ -14,8 +14,8 @@
   navigator.sendBeacon = (url, data) => {
     try {
       const target = new URL(url, location.href);
-      // Meta and this site's own funnel tracking may send beacons; other trackers stay blocked.
-      if (/(^|\.)facebook\.(com|net)$/.test(target.hostname) || (target.origin === location.origin && target.pathname === '/api/track')) return sendBeacon(url, data);
+      // Meta, this site's own funnel tracking and Vercel Web Analytics may send beacons; other trackers stay blocked.
+      if (/(^|\.)facebook\.(com|net)$/.test(target.hostname) || (target.origin === location.origin && (target.pathname === '/api/track' || target.pathname.startsWith('/_vercel/insights/')))) return sendBeacon(url, data);
     } catch {}
     return true;
   };
