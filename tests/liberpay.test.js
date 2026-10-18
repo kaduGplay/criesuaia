@@ -31,7 +31,7 @@ test('México: SPEI e OXXO em pesos, upsell sempre por SPEI e sem cobrança dupl
   assert.equal(deposits[0].metadata.order_id,spei.hash);
   assert.deepEqual([spei.method,spei.pixCode,spei.barcodeUrl,spei.currency,spei.amount],['spei','684180417019567955',null,'MXN',catalogMx.main.price]);
   assert.deepEqual(await createMxPayment(base),spei);assert.equal(deposits.length,1);
-  const oxxo=await createMxPayment({...base,sid:'mx-2',method:'oxxo',bumps:['segundaparceira']});
+  const oxxo=await createMxPayment({...base,sid:'mx-2',method:'oxxo',bumps:['chamadadevoz']});
   assert.deepEqual([deposits[1].payment_method,deposits[1].amount,oxxo.barcodeUrl],['oxxo',138,'https://static.example.test/barcode.png']);
   await createMxPayment({...base,sid:'mx-3',method:'oxxo',upsell:'video'},'upsell');
   assert.deepEqual([deposits[2].payment_method,deposits[2].amount],['spei',69]);

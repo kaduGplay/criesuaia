@@ -71,8 +71,8 @@ sub('"Deslize e escolha suas preferências."', '"Desliza y elige tus preferencia
 sub('e[0]==="anime"?"Modelo IA gerada (Anime)":r.preview.modelTag', 'e[0]==="anime"?"Modelo IA generada (Anime)":r.preview.modelTag')
 
 # --- No voice --------------------------------------------------------------------
-# Her voice exists only in Portuguese: the videos play muted with no sound button, and nothing promises
-# that she talks (the voice call order bump is also out of catalog-mx.json).
+# The character videos speak Portuguese: they play muted with no sound button, and the offer page does not
+# promise audios. The voice call order bump stays, since the app it sells talks in Mexican Spanish.
 sub('muted:!f,loop:!0,playsInline:!0,preload:"metadata",onPlaying:S,onClick:I,onError:()=>y(!0)},a),i.jsx("button",{type:"button",className:"character-som",onClick:I,"aria-label":f?"Desligar o som":"Ligar o som",children:i.jsx(yg,{ligado:f})})]',
     'muted:!0,loop:!0,playsInline:!0,preload:"metadata",onPlaying:S,onError:()=>y(!0)},a)]')
 sub('muted:!f,playsInline:!0,onClick:I,onPlaying:S,onError:()=>y(!0)},x):i.jsx("img",{src:N,alt:u,className:"hero-char-img",onError:De}),x&&!p&&!f&&i.jsxs("button",{type:"button",className:"hero-char-som",onClick:I,"aria-label":"Ativar som",children:[i.jsx("span",{className:"hero-char-som-icone",children:"🔇"}),i.jsx("span",{children:"OUÇA ELA"})]}),',
