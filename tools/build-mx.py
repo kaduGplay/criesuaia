@@ -64,6 +64,15 @@ sub('"🥰 +50.000 IAs listas para ti"', '"🥰 +50,000 IAs listas para ti"')
 sub('highlight:"37.429",after:" usuarios satisfechos!"', 'highlight:"37,429",after:" usuarios satisfechos!"')
 sub('toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})', 'toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"})')
 
+# --- Home screen -------------------------------------------------------------------
+# Mexico opens on the Spanish home picture: a tap anywhere starts the quiz, and so does waiting 5 seconds
+# (home_auto tells the two apart in the funnel report).
+sub('qzShowHome=!1||/[?&]inicio=1(&|$)/.test(location.search)', 'qzShowHome=!0')
+sub('es:{src:"/inicio.webp",alt:"Crea tu compañera IA — empezar a crear ahora",cta:"Empezar a crear ahora"}',
+    'es:{src:"/inicio-mx.webp",alt:"Crea tu compañera IA — empieza a crearla ahora",cta:"Empieza a crearla ahora"}')
+sub('Pv=({onStart:e})=>{const{lang:t}=Yt(),n=ec[t]??ec.pt;return',
+    'Pv=({onStart:e})=>{const{lang:t}=Yt(),n=ec[t]??ec.pt;w.useEffect(()=>{const qzT=setTimeout(()=>{$("home_auto"),e()},5e3);return()=>clearTimeout(qzT)},[]);return')
+
 # --- Quiz ------------------------------------------------------------------------
 # Realistic only: no style question, so the quiz opens on the ethnicity and every answer set is realistic
 # (an unanswered style is never "anime").
@@ -183,7 +192,9 @@ version = re.search(r'index-B-OgTTgT\.js\?v=([\w-]+)', html).group(1)
 html = html.replace('<html lang="pt-BR">', '<html lang="es-MX">', 1)
 html = html.replace('<title>Quiz - Crie sua Personagem</title>', '<title>Crea tu novia IA</title>', 1)
 html = html.replace(f'/assets/index-B-OgTTgT.js?v={version}', f'/assets/index-mx.js?v={version}', 1)
-assert 'index-mx.js' in html and 'lang="es-MX"' in html
+# Phones taller than the picture show it whole instead of cutting the headline at the sides.
+html = html.replace('</head>', '  <link rel="preload" as="image" href="/inicio-mx.webp" fetchpriority="high">\n    <style>@media (max-aspect-ratio: 900/1599){.home-img{object-fit:contain}}</style>\n  </head>', 1)
+assert 'index-mx.js' in html and 'lang="es-MX"' in html and 'inicio-mx.webp' in html
 (PUBLIC / 'mexico').mkdir(exist_ok=True)
 (PUBLIC / 'mexico/index.html').write_text(html)
 print('ok: public/assets/index-mx.js and public/mexico/index.html')
