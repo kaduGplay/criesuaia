@@ -65,3 +65,13 @@ test('México: payment.paid confirma só a transação e o valor certos',async()
   assert.equal((await liberpayWebhook({event:'payment.paid',data:{transaction_id:'tx-1',status:'paid',amount:99}})).duplicate,true);
  }finally{global.fetch=fetchOriginal;for(const k of Object.keys(env))delete process.env[k]}
 });
+
+test('México: venda em clichat.tech vai ao Facebook com a página certa',async()=>{
+ const fetchOriginal=global.fetch;Object.assign(process.env,env);const {store}=fakeServices(deposit);
+ try{
+  const r=await createMxPayment({name:'Juan',email:'',sid:'mx-d',cliutm:{sourceUrl:'https://www.clichat.tech/mexico?utm_source=fb',fbp:'fb.1.1.1'}});
+  assert.equal(JSON.parse(store.get('pix:order:'+r.hash)).meta.source_url,'https://www.clichat.tech/mexico');
+  const fora=await createMxPayment({name:'Juan',email:'',sid:'mx-e',cliutm:{sourceUrl:'https://outro-site.example/mexico'}});
+  assert.equal(JSON.parse(store.get('pix:order:'+fora.hash)).meta.source_url,undefined);
+ }finally{global.fetch=fetchOriginal;for(const k of Object.keys(env))delete process.env[k]}
+});
