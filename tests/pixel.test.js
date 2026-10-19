@@ -26,6 +26,7 @@ test('Purchase do México sai em MXN',async()=>{
   const context={window,document:{createElement:()=>({}),head:{appendChild:()=>{}}},location:{href:'https://example.test'+path,origin:'https://example.test',pathname:path},URL,localStorage:{getItem:()=>null,setItem:()=>{}}};
   vm.runInNewContext(fs.readFileSync(new URL('../public/meta-pixel.js',import.meta.url),'utf8'),context);
   await window.fetch('/api/checkout?op=status&hash=mx');await new Promise(r=>setTimeout(r,10));
+  assert.equal(window.fbq.queue.find(x=>x[0]==='init')[1],'1641698144409525');
   return window.fbq.queue.find(x=>x[1]==='Purchase')[2].currency};
  assert.equal(await run('/mexico',{status:'paid',amount:9900,kind:'main',currency:'MXN'}),'MXN');
  assert.equal(await run('/mexico',{status:'paid',amount:9900,kind:'main'}),'MXN');

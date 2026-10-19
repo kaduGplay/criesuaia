@@ -1,5 +1,6 @@
 (() => {
-  const PIXEL_ID = '1422813852615307';
+  // The Mexican site (/mexico) reports to its own pixel.
+  const PIXEL_ID = location.pathname.startsWith('/mexico') ? '1641698144409525' : '1422813852615307';
   if (!window.fbq) {
     const fbq = window.fbq = function() { fbq.callMethod ? fbq.callMethod.apply(fbq, arguments) : fbq.queue.push(arguments); };
     window._fbq = fbq; fbq.push = fbq; fbq.loaded = true; fbq.version = '2.0'; fbq.queue = [];

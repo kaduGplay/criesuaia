@@ -47,6 +47,7 @@ sub('onCheckout:t==="br"?', 'onCheckout:t==="latam"?', 2)
 sub('bt=e=>(e/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})',
     'bt=e=>"MX$ "+(e/100).toLocaleString("es-MX",{minimumFractionDigits:0,maximumFractionDigits:2})')
 sub('kv=1490', 'kv=9900')
+sub('Gh="1422813852615307"', 'Gh="1641698144409525"')
 sub('currency:"BRL"', 'currency:"MXN"', 8)
 sub('value:19.9', 'value:99', 3)
 # The checkout's InitiateCheckout also carries the price, in MXN like every other Mexican event.
