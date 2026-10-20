@@ -16,7 +16,7 @@ test('pixel único e Purchase só após status pago, sem duplicatas',async()=>{
  await window.fetch('/api/checkout?op=status&hash=abc');await new Promise(r=>setTimeout(r,10));
  await window.fetch('/api/checkout?op=status&hash=abc');await new Promise(r=>setTimeout(r,10));
  const events=window.fbq.queue.filter(x=>x[1]==='Purchase');assert.equal(events.length,1);assert.equal(events[0][2].value,19.89);assert.equal(events[0][3].eventID,'purchase_abc');
- const bundle=fs.readFileSync(new URL('../public/assets/index-B-OgTTgT.js',import.meta.url),'utf8');
+ const bundle=fs.readFileSync(new URL('../source/brasil/index-B-OgTTgT.js',import.meta.url),'utf8');
  assert.ok(bundle.includes('ng=(e,t={},n=wf())=>n,'));
  assert.ok(!bundle.includes('Gh="1481680676270423"'));
  assert.equal(events[0][2].currency,'BRL');

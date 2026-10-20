@@ -1,7 +1,8 @@
 """Builds the Mexican site (/mexico) from the Brazilian bundle.
 
-Reads public/assets/index-B-OgTTgT.js and public/index.html and writes
-public/assets/index-mx.js and public/mexico/index.html: Mexican Spanish copy,
+Reads the Brazilian bundle and page kept in source/brasil (the Brazilian funnel
+itself is off the air) and writes public/assets/index-mx.js and
+public/mexico/index.html: Mexican Spanish copy,
 prices in MXN and LiberPay (SPEI or OXXO) instead of PIX. Every replacement
 must match the expected number of times, so a change in the Brazilian bundle
 fails loudly here instead of shipping half-translated. Run after changing the
@@ -13,7 +14,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PUBLIC = ROOT / 'public'
-js = (PUBLIC / 'assets/index-B-OgTTgT.js').read_text()
+SOURCE = ROOT / 'source/brasil'
+js = (SOURCE / 'index-B-OgTTgT.js').read_text()
 
 
 def sub(old, new, count=1):
@@ -198,7 +200,7 @@ for leftover in ['Gerar meu', 'GERAR MEU', 'COPIAR CÓDIGO PIX', 'Pagamento conf
 
 (PUBLIC / 'assets/index-mx.js').write_text(js)
 
-html = (PUBLIC / 'index.html').read_text()
+html = (SOURCE / 'index.html').read_text()
 version = re.search(r'index-B-OgTTgT\.js\?v=([\w-]+)', html).group(1)
 html = html.replace('<html lang="pt-BR">', '<html lang="es-MX">', 1)
 html = html.replace('<title>Quiz - Crie sua Personagem</title>', '<title>Crea tu novia IA</title>', 1)

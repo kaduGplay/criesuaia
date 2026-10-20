@@ -9,6 +9,8 @@ export default async function handler(req,res){
   if(origin&&new URL(origin).host!==req.headers.host)throw new PaymentError('Origem inválida.',403);
   // ?site=mx is the Mexican site: MXN catalog and LiberPay (SPEI/OXXO) instead of VoidPay PIX.
   const mx=req.query.site==='mx';
+  // The Brazilian funnel is off the air: only the Mexican site sells. Orders already generated keep their status and PIX webhook.
+  if(!mx&&['products','pix','upsell-pix'].includes(req.query.op))throw new PaymentError('Esta oferta não está mais disponível.',410);
   if(req.method==='GET'&&req.query.op==='products')return res.status(200).json(mx?catalogMx:catalog);
   if(req.method==='GET'&&req.query.op==='status')return res.status(200).json(await status(req.query.hash));
   if(req.method==='POST'&&['pix','upsell-pix'].includes(req.query.op))return res.status(200).json(await (mx?createMxPayment:createPayment)(req.body,req.query.op==='upsell-pix'?'upsell':'main'));
