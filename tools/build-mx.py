@@ -164,7 +164,12 @@ sub('"Erro ao gerar o PIX. Tente novamente."', '"Error al generar tu pago. Inten
 sub('"Falha de conexão. Verifique sua internet e tente de novo."', '"Falla de conexión. Revisa tu internet e intenta de nuevo."')
 sub('"Não foi possível carregar o checkout. Recarregue a página."', '"No pudimos cargar el pago. Recarga la página."')
 sub('{erro:"Informe seu nome.",campo:"name"}', '{erro:"Escribe tu nombre.",campo:"name"}')
-sub('{erro:"Informe seu e-mail para gerar o PIX.",campo:"email"}', '{erro:"Escribe tu correo.",campo:"email"}')
+# The e-mail is asked while the AI is being generated (the screen at 87%), in Mexican Spanish; the checkout no
+# longer requires it, so a browser that kept no e-mail never gets stuck there.
+sub('qzAskEmail=!1', 'qzAskEmail=!0')
+sub('if(qzAskEmail&&!e.email.trim())return{erro:"Informe seu e-mail para gerar o PIX.",campo:"email"};', '')
+sub('es:{badge:"87% completado",titulo:"Tu IA está casi lista… 🔥",sub:"Deja tu nombre y e-mail para recibir las fotos exclusivas de ella — y revélala ahora.",nome:"Tu nombre (o apodo)",placeholder:"tu@email.com",botao:"✨ REVELAR MI IA",erroEmail:"Revisa el e-mail 😉",seguro:"🔒 Sin spam. Solo usamos tu e-mail para enviarte el acceso y novedades de ella."}',
+    'es:{badge:"87% completado",titulo:"Tu IA está casi lista… 🔥",sub:"Deja tu nombre y correo para recibir las fotos exclusivas de ella — y descúbrela ahora.",nome:"Tu nombre (o apodo)",placeholder:"tucorreo@gmail.com",botao:"✨ REVELAR MI IA",erroEmail:"Revisa tu correo 😉",seguro:"🔒 Sin spam. Solo usamos tu correo para enviarte el acceso y las novedades de ella."}')
 # The checkout requires the buyer's WhatsApp, 10 digits in the local format (the mask strips the country code):
 # it delivers the access and reaches payments generated and not made. Filling it counts as a Lead for Meta.
 sub('if(n&&(n.length<10||n.length>11))return{erro:"Celular inválido (use DDD + número).",campo:"phone"}', 'if(n.length!==10)return{erro:"Escribe tu WhatsApp con lada: 10 dígitos.",campo:"phone"}')

@@ -147,7 +147,9 @@ sub('" ya está lista y esperándote — genera tu pago y es tuya "', '" ya est�
 sub('"🔒 Compra segura · Pago único por SPEI u OXXO"', '"🔒 Compra segura · Pago único por transferencia bancaria"')
 sub('i.jsx("span",{children:"pago único · SPEI u OXXO"})', 'i.jsx("span",{children:"pago único · transferencia bancaria"})')
 sub('{erro:"Escribe tu nombre.",campo:"name"}', '{erro:"Escribí tu nombre.",campo:"name"}')
-sub('{erro:"Escribe tu correo.",campo:"email"}', '{erro:"Escribí tu correo.",campo:"email"}')
+# The e-mail screen while the AI is generated, in voseo ("mail", as Argentines say).
+sub('es:{badge:"87% completado",titulo:"Tu IA está casi lista… 🔥",sub:"Deja tu nombre y correo para recibir las fotos exclusivas de ella — y descúbrela ahora.",nome:"Tu nombre (o apodo)",placeholder:"tucorreo@gmail.com",botao:"✨ REVELAR MI IA",erroEmail:"Revisa tu correo 😉",seguro:"🔒 Sin spam. Solo usamos tu correo para enviarte el acceso y las novedades de ella."}',
+    'es:{badge:"87% completado",titulo:"Tu IA está casi lista… 🔥",sub:"Dejá tu nombre y tu mail para recibir las fotos exclusivas de ella — y descubrila ahora.",nome:"Tu nombre (o apodo)",placeholder:"tumail@gmail.com",botao:"✨ REVELAR MI IA",erroEmail:"Revisá tu mail 😉",seguro:"🔒 Sin spam. Solo usamos tu mail para mandarte el acceso y las novedades de ella."}')
 sub('{erro:"Escribe un correo válido.",campo:"email"}', '{erro:"Escribí un correo válido.",campo:"email"}')
 sub('{erro:"Escribe tu WhatsApp con lada: 10 dígitos.",campo:"phone"}', '{erro:"Escribí tu WhatsApp con código de área: 10 dígitos.",campo:"phone"}')
 sub('placeholder:"Tu WhatsApp (ej. 33 1234 5678)"', 'placeholder:"Tu WhatsApp (ej. 11 2345-6789)"')
