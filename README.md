@@ -6,7 +6,7 @@
 https://criesuaia.shop/ em 22/10/2026. O snapshot está em `source/brasil-2026-10-22`
 com hashes SHA-256. São 18 perguntas (a voz em português não é oferecida no México),
 com estilo realista/anime, idade, aparência e personalidade. Continuam a preparação
-com foto, etapas separadas de correio, nome da pessoa e nome da IA, em espanhol mexicano, revelação, oferta, checkout e upsells mexicanos.
+com foto, etapas separadas de correio, nome da IA e nome da pessoa, em espanhol mexicano, revelação, oferta, checkout e oferta VIP mexicana.
 O catálogo recuperado seleciona imagens/vídeos existentes; não gera personagens
 novas nem representa todas as preferências visuais com arquivos exclusivos.
 
@@ -15,7 +15,7 @@ toque duplo e progresso acessível, sem numeração visível de etapas; início 
 avanço automático após 5 segundos. Os preços continuam MX$ 99 e o pagamento é
 SPEI/OXXO pela LiberPay. Pedidos pendentes e pagamentos anteriores mantêm suas
 chaves de recuperação. O quiz tem estado separado para não confundir posições
-das sete perguntas antigas. O evento `funnel_version` identifica `mx-br-20261022-pasos-separados`
+das sete perguntas antigas. O evento `funnel_version` identifica `mx-br-20261022-original-revisado`
 nos dados do funil; nenhum aumento de vendas foi presumido ou medido ainda.
 
 Build: `python3 tools/build-mx.py`. O adaptador `tools/mx-original.py` importa o
@@ -85,3 +85,16 @@ A primeira pergunta é "Escolha o estilo dela" (Realista ou Anime). Com Anime, a
 Versão em espanhol do México em https://criesuaia.vercel.app/mexico, gerada a partir do site brasileiro por `python3 tools/build-mx.py` (gera public/assets/index-mx.js e public/mexico/index.html; rode de novo sempre que mudar o bundle brasileiro). Mesmo funil (anime ou realista, silhueta, conversa de amostra, upsells), sem a pergunta de voz, com preços em pesos (lib/catalog-mx.json: MX$ 99 de MX$ 249, bumps MX$ 39, upsells MX$ 49 a 149).
 
 Pagamento pela LiberPay em MXN: SPEI (CLABE para transferir, confirma em segundos) ou OXXO (referência com código de barras, confirma em horas); upsells sempre por SPEI. O servidor troca LIBERPAY_CLIENT_ID + LIBERPAY_CLIENT_SECRET por um token em POST /auth/token e cria a cobrança em POST /payments/deposit; o e-mail do pagador (obrigatório em MXN) é VOIDPAY_FALLBACK_EMAIL. A LiberPay só aceita IPs liberados no painel dela, e os IPs de saída da Vercel mudam; se a LiberPay não puder liberar a chave para qualquer IP, configure LIBERPAY_PROXY_URL (ex.: http://usuario:senha@host:porta de um proxy com IP fixo) e libere o IP desse proxy no painel. Hoje o projeto usa os IPs fixos da Vercel (Advanced Networking, us-east-1: 155.121.192.6 a 155.121.192.11), liberados na LiberPay; depois de ativar IPs fixos é preciso publicar de novo. Webhook a cadastrar no painel da LiberPay: https://criesuaia.vercel.app/api/liberpay/webhook (payment.paid confirma o pedido e envia o Purchase em MXN para a Meta).
+
+
+Revisão do original publicado em 22/10/2026: o bundle ao vivo mantém o hash
+8b3fc804ce6fa1e4809374e6e7325e453bffb37d976e6089645557a4bfb527cb.
+Ordem conferida: início → perguntas → preparação → e-mail → nome da IA →
+nome da pessoa → prévia → oferta → checkout com dois adicionais opcionais →
+pagamento → oferta VIP → confirmação/acesso. O México agora segue essa ordem,
+inclusive a ilustração original de preparação e as duas telas de nomes.
+Os adicionais ficam desmarcados por padrão e entram no total somente ao selecionar.
+A sequência mexicana anterior de oito upsells foi substituída por uma oferta VIP.
+Mantidas as adaptações regionais: espanhol, MXN, SPEI/OXXO e pixel do México;
+voz em português omitida. Por preferência expressa, o modal não mostra porcentagem
+e o quiz não mostra números de etapa.

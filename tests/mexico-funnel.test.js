@@ -28,9 +28,9 @@ test('nova versão mantém pagamento mexicano, pedidos pendentes e pixel exclusi
  assert.ok(js.includes('Gh="1641698144409525"') && js.includes('currency:"MXN"'));
  assert.ok(js.includes('/api/checkout?op=pix&site=mx'));
  assert.ok(js.includes('onCheckout:t==="latam"?()=>{stopFunnelMedia();h("checkout")}'));
- assert.ok(js.includes('version:"mx-br-20261022-pasos-separados"'));
+ assert.ok(js.includes('version:"mx-br-20261022-original-revisado"'));
  const html = read('public/mexico/index.html');
- assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-pasos-separados'));
+ assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-original-revisado'));
  assert.ok(!html.includes('trackio') && !html.includes('utmify') && !html.includes('1481680676270423'));
 });
 
@@ -71,22 +71,28 @@ test('runtime retorna o país da versão mexicana ou argentina',async()=>{
 });
 
 
-test('nome da pessoa vem depois do correio e antes do componente de nome da IA',()=>{
- const hooks=[],saved=new Map([['nq_email','carlos@example.test']]),events=[];let cursor=0;
- const characterPreview=()=>{};
+
+test('ordem original: nome da IA, nome da pessoa, depois revelação',()=>{
+ const hooks=[],saved=new Map(),events=[],names=[];let cursor=0;
+ const preview={nameTitle:'IA_NAME',nameSubtitle:'',namePlaceholder:'',nameButton:'Continuar',userNameTitle:n=>n+' USER_NAME',userNameSubtitle:'',userNamePlaceholder:'',userNameButton:'Continuar',typingTexts:()=>[],chatButton:'CHAT'};
  const context={w:{useState(initial){const pos=cursor++;if(!(pos in hooks))hooks[pos]=typeof initial==='function'?initial():initial;return[hooks[pos],value=>{hooks[pos]=value}]},useRef(initial){const pos=cursor++;return hooks[pos]??={current:initial}},useEffect(){}},
- i:{jsx:(type,props)=>({type,props}),jsxs:(type,props)=>({type,props})},
- localStorage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)},$:event=>events.push(event),xg:characterPreview,setTimeout,clearTimeout};
- vm.runInNewContext(read('tools/mx-name-step.js'),context);
- const props={answers:{},onNameSubmit:()=>{},onChatNow:()=>{}};
- const render=()=>{cursor=0;return context.mxPreview(props)};
- let screen=render(),form=screen.props.children.props.children.props.children.find(node=>node?.type==='form');
- assert.equal(form.props.children[0].props.name,'name');
- form.props.children[0].props.onChange({target:{value:' Carlos '}});
- screen=render();form=screen.props.children.props.children.props.children.find(node=>node?.type==='form');
- form.props.onSubmit({preventDefault(){}});
- assert.equal(saved.get('nq_nome'),'Carlos');assert.equal(saved.get('nq_email'),'carlos@example.test');
- assert.deepEqual(events,['user_name_submitted']);
- assert.equal(render().type,characterPreview,'só então mostra o componente que pede o nome da IA');
- assert.ok(js.includes('i.jsx(mxPreview,{answers:x,onNameSubmit:je,onChatNow:F})'));
+ i:{jsx:(type,props)=>({type,props}),jsxs:(type,props)=>({type,props})},Yt:()=>({t:{preview}}),xa:()=>({image:'/character.webp',video:null}),Hu:()=>true,ii:()=>{},Cf:()=>{},wg:()=>{},De:()=>{},stopFunnelMedia:()=>{},
+ localStorage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)},$:event=>events.push(event)};
+ const start=js.indexOf('xg=({answers:');vm.runInNewContext(js.slice(start,js.indexOf(',gn=',start)),context);
+ const render=()=>{cursor=0;return context.xg({answers:{},onNameSubmit:name=>names.push(name),onChatNow:()=>{}})};
+ const find=(node,predicate)=>{if(!node||typeof node!=='object')return null;if(predicate(node))return node;for(const child of [node.props?.children].flat()){const match=find(child,predicate);if(match)return match}return null};
+ let screen=render();assert.equal(find(screen,n=>n.props?.className==='preview-title').props.children,'IA_NAME');
+ find(screen,n=>n.type==='input').props.onChange({target:{value:'Luna'}});screen=render();find(screen,n=>n.type==='form').props.onSubmit({preventDefault(){}});
+ screen=render();assert.equal(find(screen,n=>n.props?.className==='preview-title').props.children,'Luna USER_NAME');assert.deepEqual(names,['Luna']);
+ find(screen,n=>n.type==='input').props.onChange({target:{value:'Carlos'}});screen=render();find(screen,n=>n.type==='form').props.onSubmit({preventDefault(){}});
+ screen=render();assert.equal(saved.get('nq_nome'),'Carlos');assert.ok(find(screen,n=>n.props?.className==='chat-button'));
+ assert.ok(!js.includes('mxPreview'));
+});
+
+test('preparação e estrutura de compra conferidas com o original',()=>{
+ const loading=text=>{const a=text.indexOf('dg=({onComplete:');return text.slice(a,text.indexOf(',_o=',a))};
+ assert.equal(loading(js),loading(original));
+ assert.ok(js.includes('const qzL=qzUps.filter(u=>u.id==="vip")'));
+ assert.ok(js.includes('className:"ck-bumps"')&&js.includes('checked:y.has(id)'));
+ assert.ok(js.includes('[y,j]=w.useState(new Set)'),'adicionais não pré-selecionados');
 });

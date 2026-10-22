@@ -8,7 +8,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'source/brasil-2026-10-22/index-BR-QfwKO.js'
-VERSION = 'mx-br-20261022-pasos-separados'
+VERSION = 'mx-br-20261022-original-revisado'
 
 
 def between(text, start, end):
@@ -22,9 +22,30 @@ def adapt(js, html):
     original = SOURCE.read_text()
     # Separate email, visitor name and character name, using Mexican copy.
     modal = (ROOT / 'tools/mx-lead-modal.js').read_text().strip()
-    modal += ',' + (ROOT / 'tools/mx-name-step.js').read_text().strip()
     js = js.replace(between(js, 'cg=({onDone:', ',dg='), modal, 1)
     js = js.replace('||"sua namorada"', '||"tu novia"')
+    # Restore the original preparation illustration and the two original name
+    # screens: character name first, visitor name second (even on a return visit).
+    js = js.replace(between(js, 'dg=({onComplete:', ',_o='),
+                    between(original, 'dg=({onComplete:', ',_o='), 1)
+    js = js.replace('[h,v]=w.useState(()=>{try{return localStorage.getItem("nq_nome")||""}catch{return""}})',
+                    '[h,v]=w.useState("")', 1)
+    js = js.replace('m(!h.trim()),t(l.trim())', 'm(!0),t(l.trim())', 1)
+    # Reuse the published Spanish preview copy rather than a rewritten variant.
+    def preview_copy(text):
+        start = text.index('preview:{', text.index('es:{highlightWords'))
+        end = text.index('},offer:', start) + 1
+        return text[start:end]
+    js = js.replace(preview_copy(js), preview_copy(original), 1)
+    # Same purchase structure as Brazil: two unchecked optional order bumps,
+    # then one VIP offer after payment. Amounts still come from the MX catalog.
+    old = 'const qzL=e[0]==="anime"?qzUps.filter(u=>u.id!=="video"):qzUps'
+    assert old in js
+    js = js.replace(old, 'const qzL=qzUps.filter(u=>u.id==="vip")', 1)
+    form = 'i.jsxs("div",{className:"ck-form",children:['
+    assert js.count(form) == 1
+    bumps = (ROOT / 'tools/mx-order-bumps.js').read_text().strip()
+    js = js.replace(form, bumps + ',' + form, 1)
     # Import the actual published questions, their complete option sets and
     # translations, rather than recreating them from screenshots.
     questions = between(original, 'tc=[', ',Av=()=>')
@@ -51,8 +72,6 @@ def adapt(js, html):
         'd="nq_quiz_state"': 'd="nq_quiz_state_mx_br_v1"',
         'Date.now()-Q.ts>6*60*60*1e3': 'Date.now()-Q.ts>72*60*60*1e3',
         'Rt("ViewContent"': 'vt("ViewContent"',
-        'i.jsx(xg,{answers:x,onNameSubmit:je,onChatNow:F})':
-            'i.jsx(mxPreview,{answers:x,onNameSubmit:je,onChatNow:F})',
         'value:19.9,currency:"BRL"': 'value:99,currency:"MXN"',
         'onCheckout:t==="br"?()=>h("checkout")':
             'onCheckout:t==="latam"?()=>{stopFunnelMedia();h("checkout")}',
