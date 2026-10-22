@@ -1,6 +1,6 @@
 """Builds the Argentine site (/argentina) from the Mexican one.
 
-Reads public/assets/index-mx.js and public/mexico/index.html (run
+Reads source/mexico-base/index-mx.js and its index.html (run
 tools/build-mx.py first) and writes public/assets/index-ar.js,
 public/argentina/index.html and lib/catalog-ar.json: Rioplatense Spanish (voseo),
 prices in ARS and payment by bank transfer to a CVU (LiberPay), whose
@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PUBLIC = ROOT / 'public'
-js = (PUBLIC / 'assets/index-mx.js').read_text()
+js = (ROOT / 'source/mexico-base/index-mx.js').read_text()
 
 # Argentine prices, in ARS cents. The struck-through "before" prices keep the Mexican proportions
 # (the main one matches the 60% OFF badge). LiberPay accepts AR$ 2.000 to AR$ 1.000.000 per charge.
@@ -236,7 +236,7 @@ for leftover in ['MX$', 'MXN', 'R$', 'BRL', 'con lada', 'usa lada', 'ahorita mis
 
 (PUBLIC / 'assets/index-ar.js').write_text(js)
 
-html = (PUBLIC / 'mexico/index.html').read_text()
+html = (ROOT / 'source/mexico-base/index.html').read_text()
 for old, new in [('<html lang="es-MX">', '<html lang="es-AR">'), ('<title>Crea tu novia IA</title>', '<title>Creá tu novia IA</title>'), ('/assets/index-mx.js?v=', '/assets/index-ar.js?v='), ('href="/inicio-mx.webp"', 'href="/inicio-ar.webp"')]:
     if html.count(old) != 1:
         sys.exit(f'html: expected 1x {old!r}')

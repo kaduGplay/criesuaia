@@ -1,14 +1,15 @@
 """Builds the Mexican site (/mexico) from the Brazilian bundle.
 
-Reads the Brazilian bundle and page kept in source/brasil (the Brazilian funnel
-itself is off the air) and writes public/assets/index-mx.js and
-public/mexico/index.html: Mexican Spanish copy,
+Builds the payment/presentation shell from source/brasil, then imports the
+current public questionnaire from source/brasil-2026-10-22 through mx-original.py.
+Writes public/assets/index-mx.js and public/mexico/index.html: Mexican Spanish copy,
 prices in MXN and LiberPay (SPEI or OXXO) instead of PIX. Every replacement
 must match the expected number of times, so a change in the Brazilian bundle
 fails loudly here instead of shipping half-translated. Run after changing the
 Brazilian bundle:  python3 tools/build-mx.py
 """
 import re
+import runpy
 import sys
 from pathlib import Path
 
@@ -218,8 +219,6 @@ for leftover in ['Gerar meu', 'GERAR MEU', 'COPIAR CÓDIGO PIX', 'Pagamento conf
     if leftover in js:
         sys.exit(f'Portuguese left in the Mexican bundle: {leftover!r}')
 
-(PUBLIC / 'assets/index-mx.js').write_text(js)
-
 html = (SOURCE / 'index.html').read_text()
 version = re.search(r'index-B-OgTTgT\.js\?v=([\w-]+)', html).group(1)
 html = html.replace('<html lang="pt-BR">', '<html lang="es-MX">', 1)
@@ -229,5 +228,14 @@ html = html.replace(f'/assets/index-B-OgTTgT.js?v={version}', f'/assets/index-mx
 html = html.replace('</head>', '  <link rel="preload" as="image" href="/inicio-mx.webp" fetchpriority="high">\n    <style>@media (max-aspect-ratio: 900/1599){.home-img{object-fit:contain}}</style>\n  </head>', 1)
 assert 'index-mx.js' in html and 'lang="es-MX"' in html and 'inicio-mx.webp' in html
 (PUBLIC / 'mexico').mkdir(exist_ok=True)
+# Keep the previous Mexican shell as Argentina's stable build input. Updating
+# Mexico's questionnaire must not change the Argentine funnel by accident.
+base = ROOT / 'source/mexico-base'
+base.mkdir(exist_ok=True)
+(base / 'index-mx.js').write_text(js)
+(base / 'index.html').write_text(html)
+adapt = runpy.run_path(str(ROOT / 'tools/mx-original.py'))['adapt']
+js, html = adapt(js, html)
+(PUBLIC / 'assets/index-mx.js').write_text(js)
 (PUBLIC / 'mexico/index.html').write_text(html)
 print('ok: public/assets/index-mx.js and public/mexico/index.html')

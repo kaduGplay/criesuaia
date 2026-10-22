@@ -2,84 +2,20 @@
 <html lang="es-MX">
   <head>
     <meta charset="UTF-8" />
-    <!-- interactive-widget=resizes-content: quando o teclado abre, o navegador
-         REDIMENSIONA o layout em vez de deslocar a viewport por cima dele. Sem
-         isso, um elemento `fixed` (o chat) é arrastado pra cima junto e volta ao
-         lugar um ou dois frames depois, quando o JS compensa — o tranco que dava
-         ao focar o campo de digitar. Com isto, não há o que compensar.
-         Chrome/Android entende; iOS ainda não, e lá o ajuste por
-         visualViewport (ChatScreen.tsx) continua sendo a rede. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
     <title>Crea tu novia IA</title>
-    <!-- Arte da primeira tela: baixa em paralelo com o JS, em vez de esperar o
-         React montar. É a primeira coisa que o lead vê — cada 100ms conta.
-         Como existe uma versão por idioma, a escolha acontece aqui. Isto é só
-         uma dica de download: se errar, a imagem certa carrega normalmente
-         logo depois (o geo-IP, que é assíncrono, ainda não respondeu aqui). -->
-    
-    
-    
     <link href="/assets/fonts-local.css" rel="stylesheet">
-    
-    <!-- Pixel da Utmify — UM carregamento só, de propósito.
-
-         Aqui havia três 
-
-    <!-- Meta Pixel Code -->
-    
-    <!-- End Meta Pixel Code -->
-
-    <!-- O pixel de NAVEGADOR do cliutm (trackio) ficava aqui e saiu em
-         01/09/2026. Dois motivos, nesta ordem:
-
-         1. Não fazia nada. O /pixel.js?pixel_ids=... daquele host devolve 59
-            bytes — `w.trackio = function(){ return null; }`, um stub vazio.
-            Não carregava o fbevents.js nem disparava evento nenhum.
-         2. No dia em que o host passasse a servir o script de verdade — o que
-            acontece SEM deploy nosso — ele começaria a duplicar sozinho: o id
-            1481680676270423 é o MESMO do fbq('init') acima, e como o script
-            não recebe o nosso event_id, a Meta não teria como juntar os dois.
-
-         O que o cliutm precisa receber ele já recebe, e com dedup: a cópia
-         SERVER-SIDE em src/utils/cliutm.ts e api/checkout.js (POST em
-         /api/events/collect) reaproveita o event_id do navegador. Se um dia
-         voltar a fazer sentido ter o script, ele só entra depois de o cliutm
-         confirmar que o pixel.js aceita event_id externo. -->
-
-    
-
-    <!-- Anti-inspecionar: bloqueia atalhos comuns do DevTools/ver-código e
-         redireciona se as ferramentas forem abertas mesmo assim. Desligado em
-         localhost pra não atrapalhar o dev. Não roda o bloqueio de desktop
-         que existia aqui antes (isMobile) — isso barraria todo mundo no PC,
-         não só quem abre o inspecionar; ficou de fora de propósito. -->
-    
-
-    <!-- Google tag (gtag.js) -->
-    
-    
-    
-    <!-- Vercel Web Analytics (the static-site form of @vercel/analytics; needs Analytics enabled in the project). -->
     <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
     <script src="/local-runtime.js"></script>
-    <script src="/meta-pixel.js?v=etnia-anime-33"></script>
-    <script src="/recovery-api.js?v=etnia-anime-33"></script>
-    <script type="module" crossorigin src="/assets/index-mx.js?v=etnia-anime-33"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CPEO-Rp7.css?v=etnia-anime-33">
+    <script src="/meta-pixel.js?v=mx-br-20261022"></script>
+    <script src="/recovery-api.js?v=mx-br-20261022"></script>
+    <script type="module" crossorigin src="/assets/index-mx.js?v=mx-br-20261022"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CPEO-Rp7.css?v=mx-br-20261022">
     <link rel="preload" as="image" href="/inicio-mx.webp" fetchpriority="high">
     <style>@media (max-aspect-ratio: 900/1599){.home-img{object-fit:contain}}</style>
   </head>
   <body>
-    <!-- Meta Pixel Code (Noscript) -->
-    
-    
-    
-    
-    
-    
-    <!-- End Meta Pixel Code (Noscript) -->
-
     <div id="root"></div>
   </body>
 </html>
