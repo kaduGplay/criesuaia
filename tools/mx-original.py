@@ -8,7 +8,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'source/brasil-2026-10-22/index-BR-QfwKO.js'
-VERSION = 'mx-br-20261022-modal-original'
+VERSION = 'mx-br-20261022-nombre-correo'
 
 
 def between(text, start, end):
@@ -20,9 +20,10 @@ def between(text, start, end):
 
 def adapt(js, html):
     original = SOURCE.read_text()
-    # Import the original email-only modal and preserve its Spanish copy.
-    modal = between(original, 'cg=({onDone:', ',dg=').replace('Rt("Lead")', 'vt("Lead")')
+    # Two fields together, using Mexican copy and the original dialog styling.
+    modal = (ROOT / 'tools/mx-lead-modal.js').read_text().strip()
     js = js.replace(between(js, 'cg=({onDone:', ',dg='), modal, 1)
+    js = js.replace('||"sua namorada"', '||"tu novia"')
     # Import the actual published questions, their complete option sets and
     # translations, rather than recreating them from screenshots.
     questions = between(original, 'tc=[', ',Av=()=>')
@@ -75,6 +76,7 @@ def adapt(js, html):
     # picture automatically, and don't claim the longer quiz takes 40 seconds.
     js = js.replace('w.useEffect(()=>{const qzT=setTimeout(()=>{$("home_auto"),e()},5e3);return()=>clearTimeout(qzT)},[]);', '')
     html = re.sub(r'(?<=\?v=)[\w-]+', VERSION, html)
+    html = html.replace('src="/local-runtime.js"', f'src="/local-runtime.js?v={VERSION}"')
     # Replace inherited broken comments with a short, auditable document.
     html = re.sub(r'<!--.*?-->', '', html, flags=re.S)
     html = re.sub(r'\n\s*\n', '\n', html)

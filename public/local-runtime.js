@@ -3,7 +3,8 @@
   window.fetch = function(input, options) {
     const url = new URL(typeof input === 'string' ? input : input.url, location.href);
     if (url.hostname === 'geoapi.info') {
-      return Promise.resolve(new Response(JSON.stringify({location:{country:'BR'}}), {headers:{'Content-Type':'application/json'}}));
+      const country = location.pathname.startsWith('/mexico') ? 'MX' : location.pathname.startsWith('/argentina') ? 'AR' : 'BR';
+      return Promise.resolve(new Response(JSON.stringify({location:{country}}), {headers:{'Content-Type':'application/json'}}));
     }
     if (url.origin !== location.origin && !/(^|\.)facebook\.(com|net)$/.test(url.hostname)) {
       return Promise.resolve(new Response(null, {status:204}));
