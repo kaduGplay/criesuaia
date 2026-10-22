@@ -28,9 +28,9 @@ test('nova versão mantém pagamento mexicano, pedidos pendentes e pixel exclusi
  assert.ok(js.includes('Gh="1641698144409525"') && js.includes('currency:"MXN"'));
  assert.ok(js.includes('/api/checkout?op=pix&site=mx'));
  assert.ok(js.includes('onCheckout:t==="latam"?()=>{stopFunnelMedia();h("checkout")}'));
- assert.ok(js.includes('version:"mx-br-20261022-nombre-correo"'));
+ assert.ok(js.includes('version:"mx-br-20261022-modal-sin-porcentaje"'));
  const html = read('public/mexico/index.html');
- assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-nombre-correo'));
+ assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-modal-sin-porcentaje'));
  assert.ok(!html.includes('trackio') && !html.includes('utmify') && !html.includes('1481680676270423'));
 });
 
@@ -56,6 +56,7 @@ test('modal mexicano pede nome e correio juntos, persiste os dados e registra um
  assert.equal(saved.get('nq_nome'),'Carlos');assert.equal(saved.get('nq_email'),'carlos@example.test');assert.equal(done,1);
  assert.deepEqual(events,['user_name_submitted','email_submitted']);
  assert.ok(!source.includes('vt("Lead")'),'o dispatcher existente deduplica o Lead');
+ assert.ok(!source.includes('eg-badge')&&!source.includes('%'),'modal sem porcentagem');
  assert.ok(!js.includes('className:"quiz-count"'));
  assert.ok(js.includes('||"tu novia"')&&!js.includes('||"sua namorada"'));
 });

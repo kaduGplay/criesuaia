@@ -20,7 +20,6 @@ cg=({onDone})=>{
   onDone();
  };
  return i.jsx("div",{className:"eg-overlay",role:"dialog","aria-modal":"true","aria-labelledby":"mx-lead-title",children:i.jsxs("form",{className:"eg-modal",onSubmit:submit,children:[
-  i.jsxs("div",{className:"eg-badge",children:[i.jsx("span",{className:"eg-badge-dot"}),"87% completado"]}),
   i.jsx("h2",{id:"mx-lead-title",className:"eg-titulo",children:"Tu IA está casi lista… 🔥"}),
   i.jsx("p",{className:"eg-sub",children:"Deja tu nombre y el correo que más usas para revelar a tu IA."}),
   i.jsx("input",{ref:nameRef,type:"text",name:"name",autoComplete:"given-name","aria-label":"Tu nombre (o apodo)","aria-invalid":error==="name",className:"eg-input eg-input-nome"+(error==="name"?" eg-input-erro":""),placeholder:"Tu nombre (o apodo)",value:name,maxLength:30,onChange:event=>{setName(event.target.value);if(error==="name")setError(null)}}),

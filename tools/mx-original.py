@@ -8,7 +8,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'source/brasil-2026-10-22/index-BR-QfwKO.js'
-VERSION = 'mx-br-20261022-nombre-correo'
+VERSION = 'mx-br-20261022-modal-sin-porcentaje'
 
 
 def between(text, start, end):

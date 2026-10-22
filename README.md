@@ -15,7 +15,7 @@ toque duplo e progresso acessível, sem numeração visível de etapas; início 
 avanço automático após 5 segundos. Os preços continuam MX$ 99 e o pagamento é
 SPEI/OXXO pela LiberPay. Pedidos pendentes e pagamentos anteriores mantêm suas
 chaves de recuperação. O quiz tem estado separado para não confundir posições
-das sete perguntas antigas. O evento `funnel_version` identifica `mx-br-20261022-nombre-correo`
+das sete perguntas antigas. O evento `funnel_version` identifica `mx-br-20261022-modal-sin-porcentaje`
 nos dados do funil; nenhum aumento de vendas foi presumido ou medido ainda.
 
 Build: `python3 tools/build-mx.py`. O adaptador `tools/mx-original.py` importa o
