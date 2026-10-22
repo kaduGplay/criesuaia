@@ -75,3 +75,15 @@ test('México: venda em clichat.tech vai ao Facebook com a página certa',async(
   assert.equal(JSON.parse(store.get('pix:order:'+fora.hash)).meta.source_url,undefined);
  }finally{global.fetch=fetchOriginal;for(const k of Object.keys(env))delete process.env[k]}
 });
+
+test('México: e-mail do comprador vai para a LiberPay e fica no pedido; adicionais viram upsell',async()=>{
+ const fetchOriginal=global.fetch;Object.assign(process.env,env);const {store,deposits}=fakeServices(deposit);
+ try{
+  const r=await createMxPayment({name:'Juan Pérez',email:'juan@ejemplo.mx',sid:'mx-mail'});
+  assert.equal(deposits[0].payer.email,'juan@ejemplo.mx');assert.equal(JSON.parse(store.get('pix:order:'+r.hash)).email,'juan@ejemplo.mx');
+  const v=await createMxPayment({name:'Juan Pérez',email:'juan@ejemplo.mx',sid:'mx-mail',upsell:'chamadadevoz'},'upsell');
+  assert.deepEqual([deposits[1].amount,deposits[1].payment_method,v.amount],[39,'spei',3900]);
+  await createMxPayment({name:'Juan Pérez',email:'juan@ejemplo.mx',sid:'mx-mail',upsell:'segundaparceira'},'upsell');assert.equal(deposits[2].amount,39);
+  await assert.rejects(createMxPayment({name:'Juan',email:'no-es-correo',sid:'mx-mail2'}),/correo válido/);
+ }finally{global.fetch=fetchOriginal;for(const k of Object.keys(env))delete process.env[k]}
+});

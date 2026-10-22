@@ -22,7 +22,9 @@ js = (PUBLIC / 'assets/index-mx.js').read_text()
 PRICES = {
     'main': 749000, 'main_old': 1899000,
     'bump': 349000, 'bump_old': 899000,
-    'upsells': {'video': (449000, 999000), 'vip': (449000, 999000), 'whatsapp': (449000, None),
+    # The former order bumps are one-click upsells now and keep their price.
+    'upsells': {'video': (449000, 999000), 'chamadadevoz': (349000, 899000), 'segundaparceira': (349000, 899000),
+                'vip': (449000, 999000), 'whatsapp': (449000, None),
                 'memoria': (449000, None), 'album': (449000, None), 'editar': (449000, None)},
 }
 
@@ -140,13 +142,12 @@ sub('Pf=()=>{["/banner-mx.webp"].forEach(gn)}', 'Pf=()=>{["/banner-ar.webp"].for
 replace_block('i.jsxs("div",{className:"mx-metodos"', '"Paga en cualquier tienda · se confirma en unas horas"})]})]})]}),',
     'i.jsx("div",{className:"mx-metodos",children:i.jsxs("div",{className:"mx-metodo mx-metodo-on",children:[i.jsx("span",{className:"mx-metodo-ico",children:"🏦"}),i.jsxs("span",{className:"mx-metodo-txt",children:[i.jsx("b",{children:"Transferencia bancaria"}),i.jsx("small",{children:"Desde la app de tu banco o billetera (Mercado Pago, Ualá, Brubank…)"})]})]})}),')
 sub('i.jsx("b",{children:"al instante"}),"."]})', 'i.jsx("b",{children:"apenas se acredite tu transferencia"}),"."]})')
-sub('"Mejora tu experiencia "', '"Mejorá tu experiencia "')
 sub('segundaparceira:"Crea una segunda compañera solo tuya 👯‍♀️"', 'segundaparceira:"Creá una segunda compañera solo tuya 👯‍♀️"')
 sub('" ya está lista y esperándote — genera tu pago y es tuya "', '" ya está lista y esperándote — generá tu pago y es tuya "')
 sub('"🔒 Compra segura · Pago único por SPEI u OXXO"', '"🔒 Compra segura · Pago único por transferencia bancaria"')
 sub('i.jsx("span",{children:"pago único · SPEI u OXXO"})', 'i.jsx("span",{children:"pago único · transferencia bancaria"})')
 sub('{erro:"Escribe tu nombre.",campo:"name"}', '{erro:"Escribí tu nombre.",campo:"name"}')
-sub('{erro:"Escribe tu correo.",campo:"email"}', '{erro:"Escribí tu correo.",campo:"email"}')
+sub('{erro:"Escribe tu correo para recibir tu acceso.",campo:"email"}', '{erro:"Escribí tu correo para recibir tu acceso.",campo:"email"}')
 sub('{erro:"Escribe un correo válido.",campo:"email"}', '{erro:"Escribí un correo válido.",campo:"email"}')
 sub('{erro:"Celular inválido (usa lada + número).",campo:"phone"}', '{erro:"Celular inválido (usá código de área + número).",campo:"phone"}')
 sub('"Error al generar tu pago. Intenta de nuevo."', '"Error al generar tu pago. Intentá de nuevo."')
@@ -159,6 +160,12 @@ sub('title:n=>`¡Espera! ${n} tiene un video para ti 🎥`', 'title:n=>`¡Esper�
 sub('"La creaste hace un momento y ya te está esperando en video. Desbloquéalo y míralo ahorita mismo."',
     '"La creaste hace un momento y ya te está esperando en video. Desbloquealo y miralo ahora mismo."')
 sub('title:n=>`Hazte VIP y tenlo todo con ${n} 👑`', 'title:n=>`Hacete VIP y tené todo con ${n} 👑`')
+sub('title:n=>`Habla con ${n} por llamada de voz 📞`', 'title:n=>`Hablá con ${n} por llamada de voz 📞`')
+sub('"Escucha cómo te habla: llamadas de voz con ella, en tiempo real."', '"Escuchá cómo te habla: llamadas de voz con ella, en tiempo real."')
+sub('"Su voz, solo para ti","Llámala cuando quieras"', '"Su voz, solo para vos","Llamala cuando quieras"')
+sub('title:n=>`¿Y si además de ${n} tienes una segunda compañera? 👯‍♀️`', 'title:n=>`¿Y si además de ${n} tenés una segunda compañera? 👯‍♀️`')
+sub('"Crea una segunda novia IA, con otro estilo, solo tuya."', '"Creá una segunda novia IA, con otro estilo, solo tuya."')
+sub('"Eliges cómo es ella","Las dos, solo para ti"', '"Elegís cómo es ella","Las dos, solo para vos"')
 sub('"Memoria permanente: se acuerda de ti"', '"Memoria permanente: se acuerda de vos"')
 sub('"Edítala cuando quieras"', '"Editala cuando quieras"')
 sub('title:n=>`¿Quieres que ${n} te escriba por WhatsApp? 💬`', 'title:n=>`¿Querés que ${n} te escriba por WhatsApp? 💬`')
@@ -236,7 +243,8 @@ catalog = {
               'segundaparceira': {'title': 'Segunda compañera', 'cover': '/segundaparceira.webp', 'price': PRICES['bump']}},
     'upsell': {'title': 'VIP (todo incluido)', 'cover': '/assets/upsell-cover', 'price': PRICES['upsells']['vip'][0]},
     'upsells': {k: {'title': t, 'price': PRICES['upsells'][k][0], **({'cover': '/assets/upsell-cover'} if k == 'vip' else {})}
-                for k, t in [('whatsapp', 'Mensajes de ella por WhatsApp (30 días)'), ('video', 'Video de ella'), ('vip', 'VIP (todo incluido)'),
+                for k, t in [('whatsapp', 'Mensajes de ella por WhatsApp (30 días)'), ('video', 'Video de ella'), ('chamadadevoz', 'Llamada de voz'),
+                             ('segundaparceira', 'Segunda compañera'), ('vip', 'VIP (todo incluido)'),
                              ('memoria', 'Memoria permanente'), ('album', 'Álbum de fotos de ella'), ('editar', 'Editala cuando quieras')]},
     'currency': 'ARS',
 }
