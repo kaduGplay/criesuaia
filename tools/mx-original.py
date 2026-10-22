@@ -8,7 +8,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'source/brasil-2026-10-22/index-BR-QfwKO.js'
-VERSION = 'mx-br-20261022'
+VERSION = 'mx-br-20261022-modal-original'
 
 
 def between(text, start, end):
@@ -20,6 +20,9 @@ def between(text, start, end):
 
 def adapt(js, html):
     original = SOURCE.read_text()
+    # Import the original email-only modal and preserve its Spanish copy.
+    modal = between(original, 'cg=({onDone:', ',dg=').replace('Rt("Lead")', 'vt("Lead")')
+    js = js.replace(between(js, 'cg=({onDone:', ',dg='), modal, 1)
     # Import the actual published questions, their complete option sets and
     # translations, rather than recreating them from screenshots.
     questions = between(original, 'tc=[', ',Av=()=>')
@@ -54,8 +57,6 @@ def adapt(js, html):
             'return{...q,options:q.id===8&&Xe?Xe.filter(v=>["preto","castanho","loiro"].includes(v.value)):Xe,headerImage:G}',
         'children:i.jsx("div",{className:"progress-fill",style:{width:`${U}%`}})':
             'role:"progressbar","aria-label":"Progreso de tu IA","aria-valuemin":0,"aria-valuemax":L,"aria-valuenow":v+1,children:i.jsx("div",{className:"progress-fill",style:{width:`${U}%`}})',
-        'i.jsx("h1",{className:"quiz-title",children:me(P.title)})':
-            'i.jsx("div",{className:"quiz-count",children:`${v+1} de ${L}`}),i.jsx("h1",{className:"quiz-title",children:me(P.title)})',
         'ug()},[])': 'ug(),$("funnel_version",{meta:{version:"'+VERSION+'"}})},[])',
         'Sg();fl.createRoot': 'document.readyState==="complete"?Sg():window.addEventListener("load",()=>setTimeout(Sg,300),{once:!0});vt("PageView");fl.createRoot',
     }

@@ -28,8 +28,15 @@ test('nova versão mantém pagamento mexicano, pedidos pendentes e pixel exclusi
  assert.ok(js.includes('Gh="1641698144409525"') && js.includes('currency:"MXN"'));
  assert.ok(js.includes('/api/checkout?op=pix&site=mx'));
  assert.ok(js.includes('onCheckout:t==="latam"?()=>{stopFunnelMedia();h("checkout")}'));
- assert.ok(js.includes('version:"mx-br-20261022"'));
+ assert.ok(js.includes('version:"mx-br-20261022-modal-original"'));
  const html = read('public/mexico/index.html');
- assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022'));
+ assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-modal-original'));
  assert.ok(!html.includes('trackio') && !html.includes('utmify') && !html.includes('1481680676270423'));
+});
+
+
+test('modal de e-mail idêntico ao original e sem número de etapa adicionado', () => {
+ const modal = text => text.slice(text.indexOf('cg=({onDone:'), text.indexOf(',dg=', text.indexOf('cg=({onDone:')));
+ assert.equal(modal(js), modal(original).replace('Rt("Lead")', 'vt("Lead")'));
+ assert.ok(!js.includes('className:"quiz-count"'));
 });

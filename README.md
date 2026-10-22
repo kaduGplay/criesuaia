@@ -6,16 +6,16 @@
 https://criesuaia.shop/ em 22/10/2026. O snapshot está em `source/brasil-2026-10-22`
 com hashes SHA-256. São 18 perguntas (a voz em português não é oferecida no México),
 com estilo realista/anime, idade, aparência e personalidade. Continuam a preparação
-com foto, captura de nome/correio, revelação, oferta, checkout e upsells mexicanos.
+com foto, modal original de e-mail, revelação, oferta, checkout e upsells mexicanos.
 O catálogo recuperado seleciona imagens/vídeos existentes; não gera personagens
 novas nem representa todas as preferências visuais com arquivos exclusivos.
 
 Melhorias: espaço correto entre palavras destacadas, prevenção de avanço por
-toque duplo, progresso acessível e contagem de etapas; início por toque, sem
+toque duplo e progresso acessível, sem numeração visível de etapas; início por toque, sem
 avanço automático após 5 segundos. Os preços continuam MX$ 99 e o pagamento é
 SPEI/OXXO pela LiberPay. Pedidos pendentes e pagamentos anteriores mantêm suas
 chaves de recuperação. O quiz tem estado separado para não confundir posições
-das sete perguntas antigas. O evento `funnel_version` identifica `mx-br-20261022`
+das sete perguntas antigas. O evento `funnel_version` identifica `mx-br-20261022-modal-original`
 nos dados do funil; nenhum aumento de vendas foi presumido ou medido ainda.
 
 Build: `python3 tools/build-mx.py`. O adaptador `tools/mx-original.py` importa o
