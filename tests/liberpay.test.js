@@ -87,3 +87,14 @@ test('México: e-mail do comprador vai para a LiberPay e fica no pedido; adicion
   await assert.rejects(createMxPayment({name:'Juan',email:'no-es-correo',sid:'mx-mail2'}),/correo válido/);
  }finally{global.fetch=fetchOriginal;for(const k of Object.keys(env))delete process.env[k]}
 });
+
+test('WhatsApp do upsell fica no pedido no formato internacional (México e Argentina)',async()=>{
+ const fetchOriginal=global.fetch;Object.assign(process.env,env,{LIBERPAY_AR_CLIENT_ID:'fixture-client',LIBERPAY_AR_CLIENT_SECRET:'fixture-secret'});const {store}=fakeServices(deposit);
+ try{
+  const {createArPayment}=await import('../lib/liberpay.js');
+  for(const [fn,phone,want] of [[createMxPayment,'55 1234 5678','+525512345678'],[createMxPayment,'+52 1 222 123 4567','+522221234567'],[createArPayment,'11 2345-6789','+5491123456789'],[createArPayment,'0351 234-5678','+5493512345678']]){
+   const r=await fn({name:'Juan Pérez',email:'',phone,sid:'tel-'+want,upsell:'whatsapp'},'upsell');
+   assert.equal(JSON.parse(store.get('pix:order:'+r.hash)).phone,want);
+  }
+ }finally{global.fetch=fetchOriginal;for(const k of [...Object.keys(env),'LIBERPAY_AR_CLIENT_ID','LIBERPAY_AR_CLIENT_SECRET'])delete process.env[k]}
+});

@@ -138,7 +138,13 @@ replace_block('qzUps=[', '"Não, obrigado — finalizar"}],', UPSELLS)
 sub('Nv={chamadadevoz:"Ligações de voz com ela, em tempo real 📞",segundaparceira:"Crie uma segunda parceira só sua 👯‍♀️"}',
     'Nv={chamadadevoz:"Llamadas de voz con ella, en tiempo real 📞",segundaparceira:"Crea una segunda compañera solo tuya 👯‍♀️"}')
 sub('["De ",i.jsx("s",{children:bt(qzCur.from)})," por"]', '["Antes ",i.jsx("s",{children:bt(qzCur.from)})," · ahora"]')
-sub('placeholder:"Seu WhatsApp com DDD"', 'placeholder:"Tu WhatsApp con lada"')
+sub('placeholder:"Seu WhatsApp com DDD"', 'placeholder:"Tu WhatsApp con lada (ej. 55 1234 5678)"')
+# Mexican phone numbers: 10 digits shown as 55 1234 5678 (222 123 4567 outside Mexico City, Guadalajara and
+# Monterrey), +52 typed or not; Meta's advanced matching gets them with the country code 52.
+sub('const sl=e=>{const t=e.replace(/\D/g,"").replace(/^(?:55|0)(?=\d{10,11}$)/,"").slice(0,11);return t.length<=2?t:t.length<=6?`(${t.slice(0,2)}) ${t.slice(2)}`:t.length<=10?`(${t.slice(0,2)}) ${t.slice(2,6)}-${t.slice(6)}`:`(${t.slice(0,2)}) ${t.slice(2,7)}-${t.slice(7)}`}',
+    'const sl=e=>{let t=e.replace(/\D/g,"");if(t.length>10&&t.startsWith("52"))t=t.slice(2);if(t.length===11&&t.startsWith("1"))t=t.slice(1);t=t.slice(0,10);const a=/^(55|33|81)/.test(t)?2:3;return t.length<=a?t:t.length<=6?`${t.slice(0,a)} ${t.slice(a)}`:`${t.slice(0,a)} ${t.slice(a,6)} ${t.slice(6)}`}')
+sub('eg=e=>{const t=e.replace(/\D/g,"");if(t)return t.length===10||t.length===11?`55${t}`:t}',
+    'eg=e=>{let t=e.replace(/\D/g,"");if(!t)return;if(t.length>10&&t.startsWith("52"))t=t.slice(2);if(t.length===11&&t.startsWith("1"))t=t.slice(1);return t.length===10?`52${t}`:t}')
 sub('Pa("Informe seu WhatsApp com DDD para ela te chamar.")', 'Pa("Escribe tu WhatsApp con lada para que te escriba.")')
 sub('"Não foi possível gerar o PIX agora."', '"No pudimos generar tu pago ahora."')
 sub('"Falha de conexão. Tente de novo."', '"Falla de conexión. Intenta de nuevo."')

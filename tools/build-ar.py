@@ -176,7 +176,13 @@ sub('title:n=>`Mira a ${n} con otra ropa 📸`', 'title:n=>`Mirá a ${n} con otr
 sub('title:n=>`¿Quieres poder cambiar a ${n} cuando quieras? 🎨`', 'title:n=>`¿Querés poder cambiar a ${n} cuando quieras? 🎨`')
 sub('"Cambia su cabello, su ropa y su personalidad cuando se te antoje."', '"Cambiale el pelo, la ropa y la personalidad cuando se te antoje."')
 sub('"Cambiar el cabello y el color"', '"Cambiar el pelo y el color"')
-sub('placeholder:"Tu WhatsApp con lada"', 'placeholder:"Tu WhatsApp con código de área"')
+sub('placeholder:"Tu WhatsApp con lada (ej. 55 1234 5678)"', 'placeholder:"Tu WhatsApp con código de área (ej. 11 2345-6789)"')
+# Argentine phone numbers: 10 digits shown as 11 2345-6789 (351 234-5678 outside Buenos Aires), with or without
+# +54, the mobile 9 or a leading 0; Meta's advanced matching gets them as 549 + the 10 digits.
+sub('const sl=e=>{let t=e.replace(/\D/g,"");if(t.length>10&&t.startsWith("52"))t=t.slice(2);if(t.length===11&&t.startsWith("1"))t=t.slice(1);t=t.slice(0,10);const a=/^(55|33|81)/.test(t)?2:3;return t.length<=a?t:t.length<=6?`${t.slice(0,a)} ${t.slice(a)}`:`${t.slice(0,a)} ${t.slice(a,6)} ${t.slice(6)}`}',
+    'const sl=e=>{let t=e.replace(/\D/g,"");if(t.length>10&&t.startsWith("54"))t=t.slice(2);if(t.length>10&&t.startsWith("9"))t=t.slice(1);if(t.startsWith("0"))t=t.slice(1);t=t.slice(0,10);const a=t.startsWith("11")?2:3;return t.length<=a?t:t.length<=6?`${t.slice(0,a)} ${t.slice(a)}`:`${t.slice(0,a)} ${t.slice(a,6)}-${t.slice(6)}`}')
+sub('eg=e=>{let t=e.replace(/\D/g,"");if(!t)return;if(t.length>10&&t.startsWith("52"))t=t.slice(2);if(t.length===11&&t.startsWith("1"))t=t.slice(1);return t.length===10?`52${t}`:t}',
+    'eg=e=>{let t=e.replace(/\D/g,"");if(!t)return;if(t.length>10&&t.startsWith("54"))t=t.slice(2);if(t.length>10&&t.startsWith("9"))t=t.slice(1);if(t.startsWith("0"))t=t.slice(1);return t.length===10?`549${t}`:t}')
 sub('Pa("Escribe tu WhatsApp con lada para que te escriba.")', 'Pa("Escribí tu WhatsApp con código de área para que te escriba.")')
 
 # --- Payment screens: the CVU to transfer to, the exact amount and the wait --------------
