@@ -8,7 +8,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'source/brasil-2026-10-22/index-BR-QfwKO.js'
-VERSION = 'mx-br-20261022-modal-sin-porcentaje'
+VERSION = 'mx-br-20261022-pasos-separados'
 
 
 def between(text, start, end):
@@ -20,8 +20,9 @@ def between(text, start, end):
 
 def adapt(js, html):
     original = SOURCE.read_text()
-    # Two fields together, using Mexican copy and the original dialog styling.
+    # Separate email, visitor name and character name, using Mexican copy.
     modal = (ROOT / 'tools/mx-lead-modal.js').read_text().strip()
+    modal += ',' + (ROOT / 'tools/mx-name-step.js').read_text().strip()
     js = js.replace(between(js, 'cg=({onDone:', ',dg='), modal, 1)
     js = js.replace('||"sua namorada"', '||"tu novia"')
     # Import the actual published questions, their complete option sets and
@@ -50,6 +51,8 @@ def adapt(js, html):
         'd="nq_quiz_state"': 'd="nq_quiz_state_mx_br_v1"',
         'Date.now()-Q.ts>6*60*60*1e3': 'Date.now()-Q.ts>72*60*60*1e3',
         'Rt("ViewContent"': 'vt("ViewContent"',
+        'i.jsx(xg,{answers:x,onNameSubmit:je,onChatNow:F})':
+            'i.jsx(mxPreview,{answers:x,onNameSubmit:je,onChatNow:F})',
         'value:19.9,currency:"BRL"': 'value:99,currency:"MXN"',
         'onCheckout:t==="br"?()=>h("checkout")':
             'onCheckout:t==="latam"?()=>{stopFunnelMedia();h("checkout")}',

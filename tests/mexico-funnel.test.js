@@ -28,14 +28,14 @@ test('nova versão mantém pagamento mexicano, pedidos pendentes e pixel exclusi
  assert.ok(js.includes('Gh="1641698144409525"') && js.includes('currency:"MXN"'));
  assert.ok(js.includes('/api/checkout?op=pix&site=mx'));
  assert.ok(js.includes('onCheckout:t==="latam"?()=>{stopFunnelMedia();h("checkout")}'));
- assert.ok(js.includes('version:"mx-br-20261022-modal-sin-porcentaje"'));
+ assert.ok(js.includes('version:"mx-br-20261022-pasos-separados"'));
  const html = read('public/mexico/index.html');
- assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-modal-sin-porcentaje'));
+ assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-pasos-separados'));
  assert.ok(!html.includes('trackio') && !html.includes('utmify') && !html.includes('1481680676270423'));
 });
 
 
-test('modal mexicano pede nome e correio juntos, persiste os dados e registra um único lead', () => {
+test('modal mexicano pede apenas correio e registra um único lead', () => {
  const source=read('tools/mx-lead-modal.js');
  const hooks=[],events=[],saved=new Map();let cursor=0,done=0;
  const context={w:{
@@ -48,13 +48,13 @@ test('modal mexicano pede nome e correio juntos, persiste os dados e registra um
  const render=()=>{cursor=0;return context.cg({onDone:()=>done++}).props.children};
  const fill=(form,name,value)=>form.props.children.find(node=>node?.props?.name===name).props.onChange({target:{value}});
  let form=render();
- assert.deepEqual(Array.from(form.props.children.filter(node=>node?.type==='input'),node=>node.props.name),['name','email']);
+ assert.deepEqual(Array.from(form.props.children.filter(node=>node?.type==='input'),node=>node.props.name),['email']);
  form.props.onSubmit({preventDefault(){}});assert.equal(done,0);assert.equal(saved.size,0);
- fill(form,'name',' Carlos ');form=render();fill(form,'email','invalido');form=render();form.props.onSubmit({preventDefault(){}});
+ fill(form,'email','invalido');form=render();form.props.onSubmit({preventDefault(){}});
  assert.equal(done,0);assert.equal(saved.size,0);
  fill(form,'email',' CARLOS@example.test ');form=render();form.props.onSubmit({preventDefault(){}});form.props.onSubmit({preventDefault(){}});
- assert.equal(saved.get('nq_nome'),'Carlos');assert.equal(saved.get('nq_email'),'carlos@example.test');assert.equal(done,1);
- assert.deepEqual(events,['user_name_submitted','email_submitted']);
+ assert.equal(saved.has('nq_nome'),false);assert.equal(saved.get('nq_email'),'carlos@example.test');assert.equal(done,1);
+ assert.deepEqual(events,['email_submitted']);
  assert.ok(!source.includes('vt("Lead")'),'o dispatcher existente deduplica o Lead');
  assert.ok(!source.includes('eg-badge')&&!source.includes('%'),'modal sem porcentagem');
  assert.ok(!js.includes('className:"quiz-count"'));
@@ -68,4 +68,25 @@ test('runtime retorna o país da versão mexicana ou argentina',async()=>{
   const response=await context.window.fetch('https://geoapi.info/api/geo');
   assert.equal((await response.json()).location.country,want);
  }
+});
+
+
+test('nome da pessoa vem depois do correio e antes do componente de nome da IA',()=>{
+ const hooks=[],saved=new Map([['nq_email','carlos@example.test']]),events=[];let cursor=0;
+ const characterPreview=()=>{};
+ const context={w:{useState(initial){const pos=cursor++;if(!(pos in hooks))hooks[pos]=typeof initial==='function'?initial():initial;return[hooks[pos],value=>{hooks[pos]=value}]},useRef(initial){const pos=cursor++;return hooks[pos]??={current:initial}},useEffect(){}},
+ i:{jsx:(type,props)=>({type,props}),jsxs:(type,props)=>({type,props})},
+ localStorage:{getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)},$:event=>events.push(event),xg:characterPreview,setTimeout,clearTimeout};
+ vm.runInNewContext(read('tools/mx-name-step.js'),context);
+ const props={answers:{},onNameSubmit:()=>{},onChatNow:()=>{}};
+ const render=()=>{cursor=0;return context.mxPreview(props)};
+ let screen=render(),form=screen.props.children.props.children.props.children.find(node=>node?.type==='form');
+ assert.equal(form.props.children[0].props.name,'name');
+ form.props.children[0].props.onChange({target:{value:' Carlos '}});
+ screen=render();form=screen.props.children.props.children.props.children.find(node=>node?.type==='form');
+ form.props.onSubmit({preventDefault(){}});
+ assert.equal(saved.get('nq_nome'),'Carlos');assert.equal(saved.get('nq_email'),'carlos@example.test');
+ assert.deepEqual(events,['user_name_submitted']);
+ assert.equal(render().type,characterPreview,'só então mostra o componente que pede o nome da IA');
+ assert.ok(js.includes('i.jsx(mxPreview,{answers:x,onNameSubmit:je,onChatNow:F})'));
 });
