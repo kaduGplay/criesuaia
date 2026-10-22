@@ -139,14 +139,14 @@ replace_block('qzUps=[', '"Não, obrigado — finalizar"}],', UPSELLS)
 sub('Nv={chamadadevoz:"Ligações de voz com ela, em tempo real 📞",segundaparceira:"Crie uma segunda parceira só sua 👯‍♀️"}',
     'Nv={chamadadevoz:"Llamadas de voz con ella, en tiempo real 📞",segundaparceira:"Crea una segunda compañera solo tuya 👯‍♀️"}')
 sub('["De ",i.jsx("s",{children:bt(qzCur.from)})," por"]', '["Antes ",i.jsx("s",{children:bt(qzCur.from)})," · ahora"]')
-sub('placeholder:"Seu WhatsApp com DDD"', 'placeholder:"Tu WhatsApp con lada (ej. 33 1234 5678)"')
+sub('placeholder:"Seu WhatsApp com DDD"', 'placeholder:"Tu WhatsApp (ej. 33 1234 5678)"')
 # Mexican phone numbers: 10 digits shown as 55 1234 5678 (222 123 4567 outside Mexico City, Guadalajara and
 # Monterrey), +52 typed or not; Meta's advanced matching gets them with the country code 52.
 sub('const sl=e=>{const t=e.replace(/\D/g,"").replace(/^(?:55|0)(?=\d{10,11}$)/,"").slice(0,11);return t.length<=2?t:t.length<=6?`(${t.slice(0,2)}) ${t.slice(2)}`:t.length<=10?`(${t.slice(0,2)}) ${t.slice(2,6)}-${t.slice(6)}`:`(${t.slice(0,2)}) ${t.slice(2,7)}-${t.slice(7)}`}',
-    'const sl=e=>{let t=e.replace(/\D/g,"");if(t.length>10&&t.startsWith("52"))t=t.slice(2);if(t.length===11&&t.startsWith("1"))t=t.slice(1);t=t.slice(0,10);const a=/^(55|33|81)/.test(t)?2:3;return t.length<=a?t:t.length<=6?`${t.slice(0,a)} ${t.slice(a)}`:`${t.slice(0,a)} ${t.slice(a,6)} ${t.slice(6)}`}')
+    'const sl=e=>{let t=e.replace(/\D/g,"");if(t.length>10&&t.startsWith("52"))t=t.slice(2);if(t.length===11&&t.startsWith("1"))t=t.slice(1);t=t.slice(0,10);if(t.length<=8)return t.length<=4?t:`${t.slice(0,4)} ${t.slice(4)}`;const a=/^(55|33|81)/.test(t)?2:3;return t.length<=a?t:t.length<=6?`${t.slice(0,a)} ${t.slice(a)}`:`${t.slice(0,a)} ${t.slice(a,6)} ${t.slice(6)}`}')
 sub('eg=e=>{const t=e.replace(/\D/g,"");if(t)return t.length===10||t.length===11?`55${t}`:t}',
     'eg=e=>{let t=e.replace(/\D/g,"");if(!t)return;if(t.length>10&&t.startsWith("52"))t=t.slice(2);if(t.length===11&&t.startsWith("1"))t=t.slice(1);return t.length===10?`52${t}`:t}')
-sub('Pa("Informe seu WhatsApp com DDD para ela te chamar.")', 'Pa("Escribe tu WhatsApp con lada para que te escriba.")')
+sub('Pa("Informe seu WhatsApp com DDD para ela te chamar.")', 'Pa("Escribe tu número de WhatsApp para que te escriba.")')
 sub('"Não foi possível gerar o PIX agora."', '"No pudimos generar tu pago ahora."')
 sub('"Falha de conexão. Tente de novo."', '"Falla de conexión. Intenta de nuevo."')
 
@@ -170,9 +170,11 @@ sub('qzAskEmail=!1', 'qzAskEmail=!0')
 sub('if(qzAskEmail&&!e.email.trim())return{erro:"Informe seu e-mail para gerar o PIX.",campo:"email"};', '')
 sub('es:{badge:"87% completado",titulo:"Tu IA está casi lista… 🔥",sub:"Deja tu nombre y e-mail para recibir las fotos exclusivas de ella — y revélala ahora.",nome:"Tu nombre (o apodo)",placeholder:"tu@email.com",botao:"✨ REVELAR MI IA",erroEmail:"Revisa el e-mail 😉",seguro:"🔒 Sin spam. Solo usamos tu e-mail para enviarte el acceso y novedades de ella."}',
     'es:{badge:"87% completado",titulo:"Tu IA está casi lista… 🔥",sub:"Deja tu nombre y correo para recibir las fotos exclusivas de ella — y descúbrela ahora.",nome:"Tu nombre (o apodo)",placeholder:"tucorreo@gmail.com",botao:"✨ REVELAR MI IA",erroEmail:"Revisa tu correo 😉",seguro:"🔒 Sin spam. Solo usamos tu correo para enviarte el acceso y las novedades de ella."}')
-# The checkout requires the buyer's WhatsApp, 10 digits in the local format (the mask strips the country code):
-# it delivers the access and reaches payments generated and not made. Filling it counts as a Lead for Meta.
-sub('if(n&&(n.length<10||n.length>11))return{erro:"Celular inválido (use DDD + número).",campo:"phone"}', 'if(n.length!==10)return{erro:"Escribe tu WhatsApp con lada: 10 dígitos.",campo:"phone"}')
+# The checkout requires the buyer's WhatsApp, typed however the buyer knows it (8 digits or more, area or
+# country code not demanded; the mask formats it): it delivers the access and reaches payments generated and
+# not made. Filling it counts as a Lead for Meta.
+sub('if(n&&(n.length<10||n.length>11))return{erro:"Celular inválido (use DDD + número).",campo:"phone"}', 'if(n.length<8)return{erro:"Escribe tu número de WhatsApp.",campo:"phone"}')
+sub('d=A=>{const R=A.replace(/\\D/g,"");return R.length>=10&&R!==ur}', 'd=A=>{const R=A.replace(/\\D/g,"");return R.length>=8&&R!==ur}')
 sub('if(e==="email_submitted"&&window.fbq)', 'if((e==="email_submitted"||e==="phone_submitted")&&window.fbq)')
 sub('{erro:"Informe um e-mail válido.",campo:"email"}', '{erro:"Escribe un correo válido.",campo:"email"}')
 

@@ -151,8 +151,9 @@ sub('{erro:"Escribe tu nombre.",campo:"name"}', '{erro:"Escribí tu nombre.",cam
 sub('es:{badge:"87% completado",titulo:"Tu IA está casi lista… 🔥",sub:"Deja tu nombre y correo para recibir las fotos exclusivas de ella — y descúbrela ahora.",nome:"Tu nombre (o apodo)",placeholder:"tucorreo@gmail.com",botao:"✨ REVELAR MI IA",erroEmail:"Revisa tu correo 😉",seguro:"🔒 Sin spam. Solo usamos tu correo para enviarte el acceso y las novedades de ella."}',
     'es:{badge:"87% completado",titulo:"Tu IA está casi lista… 🔥",sub:"Dejá tu nombre y tu mail para recibir las fotos exclusivas de ella — y descubrila ahora.",nome:"Tu nombre (o apodo)",placeholder:"tumail@gmail.com",botao:"✨ REVELAR MI IA",erroEmail:"Revisá tu mail 😉",seguro:"🔒 Sin spam. Solo usamos tu mail para mandarte el acceso y las novedades de ella."}')
 sub('{erro:"Escribe un correo válido.",campo:"email"}', '{erro:"Escribí un correo válido.",campo:"email"}')
-sub('{erro:"Escribe tu WhatsApp con lada: 10 dígitos.",campo:"phone"}', '{erro:"Escribí tu WhatsApp con código de área: 10 dígitos.",campo:"phone"}')
-sub('placeholder:"Tu WhatsApp (ej. 33 1234 5678)"', 'placeholder:"Tu WhatsApp (ej. 11 2345-6789)"')
+sub('{erro:"Escribe tu número de WhatsApp.",campo:"phone"}', '{erro:"Escribí tu número de WhatsApp.",campo:"phone"}')
+# the checkout field and the WhatsApp upsell share the same example
+sub('placeholder:"Tu WhatsApp (ej. 33 1234 5678)"', 'placeholder:"Tu WhatsApp (ej. 11 2345-6789)"', 2)
 sub('"Error al generar tu pago. Intenta de nuevo."', '"Error al generar tu pago. Intentá de nuevo."')
 sub('"Falla de conexión. Revisa tu internet e intenta de nuevo."', '"Falla de conexión. Revisá tu internet e intentá de nuevo."')
 sub('"No pudimos cargar el pago. Recarga la página."', '"No pudimos cargar el pago. Recargá la página."')
@@ -179,14 +180,13 @@ sub('title:n=>`Mira a ${n} con otra ropa 📸`', 'title:n=>`Mirá a ${n} con otr
 sub('title:n=>`¿Quieres poder cambiar a ${n} cuando quieras? 🎨`', 'title:n=>`¿Querés poder cambiar a ${n} cuando quieras? 🎨`')
 sub('"Cambia su cabello, su ropa y su personalidad cuando se te antoje."', '"Cambiale el pelo, la ropa y la personalidad cuando se te antoje."')
 sub('"Cambiar el cabello y el color"', '"Cambiar el pelo y el color"')
-sub('placeholder:"Tu WhatsApp con lada (ej. 33 1234 5678)"', 'placeholder:"Tu WhatsApp con código de área (ej. 11 2345-6789)"')
 # Argentine phone numbers: 10 digits shown as 11 2345-6789 (351 234-5678 outside Buenos Aires), with or without
 # +54, the mobile 9 or a leading 0; Meta's advanced matching gets them as 549 + the 10 digits.
-sub('const sl=e=>{let t=e.replace(/\D/g,"");if(t.length>10&&t.startsWith("52"))t=t.slice(2);if(t.length===11&&t.startsWith("1"))t=t.slice(1);t=t.slice(0,10);const a=/^(55|33|81)/.test(t)?2:3;return t.length<=a?t:t.length<=6?`${t.slice(0,a)} ${t.slice(a)}`:`${t.slice(0,a)} ${t.slice(a,6)} ${t.slice(6)}`}',
-    'const sl=e=>{let t=e.replace(/\D/g,"");if(t.length>10&&t.startsWith("54"))t=t.slice(2);if(t.length>10&&t.startsWith("9"))t=t.slice(1);if(t.startsWith("0"))t=t.slice(1);t=t.slice(0,10);const a=t.startsWith("11")?2:3;return t.length<=a?t:t.length<=6?`${t.slice(0,a)} ${t.slice(a)}`:`${t.slice(0,a)} ${t.slice(a,6)}-${t.slice(6)}`}')
+sub('const sl=e=>{let t=e.replace(/\D/g,"");if(t.length>10&&t.startsWith("52"))t=t.slice(2);if(t.length===11&&t.startsWith("1"))t=t.slice(1);t=t.slice(0,10);if(t.length<=8)return t.length<=4?t:`${t.slice(0,4)} ${t.slice(4)}`;const a=/^(55|33|81)/.test(t)?2:3;return t.length<=a?t:t.length<=6?`${t.slice(0,a)} ${t.slice(a)}`:`${t.slice(0,a)} ${t.slice(a,6)} ${t.slice(6)}`}',
+    'const sl=e=>{let t=e.replace(/\D/g,"");if(t.length>10&&t.startsWith("54"))t=t.slice(2);if(t.length>10&&t.startsWith("9"))t=t.slice(1);if(t.startsWith("0"))t=t.slice(1);t=t.slice(0,10);if(t.length<=8)return t.length<=4?t:`${t.slice(0,4)}-${t.slice(4)}`;const a=t.startsWith("11")?2:3;return t.length<=a?t:t.length<=6?`${t.slice(0,a)} ${t.slice(a)}`:`${t.slice(0,a)} ${t.slice(a,6)}-${t.slice(6)}`}')
 sub('eg=e=>{let t=e.replace(/\D/g,"");if(!t)return;if(t.length>10&&t.startsWith("52"))t=t.slice(2);if(t.length===11&&t.startsWith("1"))t=t.slice(1);return t.length===10?`52${t}`:t}',
     'eg=e=>{let t=e.replace(/\D/g,"");if(!t)return;if(t.length>10&&t.startsWith("54"))t=t.slice(2);if(t.length>10&&t.startsWith("9"))t=t.slice(1);if(t.startsWith("0"))t=t.slice(1);return t.length===10?`549${t}`:t}')
-sub('Pa("Escribe tu WhatsApp con lada para que te escriba.")', 'Pa("Escribí tu WhatsApp con código de área para que te escriba.")')
+sub('Pa("Escribe tu número de WhatsApp para que te escriba.")', 'Pa("Escribí tu número de WhatsApp para que te escriba.")')
 
 # --- Payment screens: the CVU to transfer to, the exact amount and the wait --------------
 GARANTIA = 'i.jsxs("div",{className:"ck-garantia",children:[i.jsx("span",{className:"ck-garantia-icone",children:"🛡️"}),i.jsxs("span",{children:[i.jsx("b",{children:"Garantía de 7 días."})," Si no te gusta, te devolvemos tu dinero."]})]})'
