@@ -33,3 +33,8 @@ test('Purchase do México sai em MXN',async()=>{
  const mx=fs.readFileSync(new URL('../public/assets/index-mx.js',import.meta.url),'utf8');
  assert.ok(!mx.includes('BRL')&&mx.includes('currency:"MXN"'));
 });
+test('Argentina ainda sem pixel: nenhum pixel é iniciado em /argentina',()=>{
+ const window={fetch:async()=>Response.json({})};
+ vm.runInNewContext(fs.readFileSync(new URL('../public/meta-pixel.js',import.meta.url),'utf8'),{window,document:{createElement:()=>({}),head:{appendChild:()=>{}}},location:{href:'https://example.test/argentina',origin:'https://example.test',pathname:'/argentina'},URL,localStorage:{getItem:()=>null,setItem:()=>{}}});
+ assert.equal(window.fbq,undefined);
+});
