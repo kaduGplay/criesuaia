@@ -133,9 +133,10 @@ sub('te entregarás al placer', 'te vas a entregar al placer')
 sub('Solo tú y ella,', 'Solo vos y ella,')
 sub('"📸 Fotos y vídeos sin límites"', '"📸 Fotos y videos sin límites"')
 
-# --- Checkout: no Mexican banner (it shows MX$) and no SPEI/OXXO choice ---------------
-sub('i.jsx("img",{src:"/banner-mx.webp",alt:"Oferta relámpago: 60% OFF · de MX$ 249 a solo MX$ 99 · pago 100% seguro",className:"ck-banner",width:800,height:324}),', '')
-sub('Pf=()=>{["/banner-mx.webp"].forEach(gn)}', 'Pf=()=>{}')
+# --- Checkout: the Argentine banner (in ARS) and no SPEI/OXXO choice -------------------
+sub('i.jsx("img",{src:"/banner-mx.webp",alt:"Oferta relámpago: 60% OFF · de MX$ 249 a solo MX$ 99 · pago 100% seguro",className:"ck-banner",width:800,height:324}),',
+    f'i.jsx("img",{{src:"/banner-ar.webp",alt:"Oferta relámpago: 60% OFF · de {ars(PRICES["main_old"])} a solo {ars(PRICES["main"])} · pago 100% seguro",className:"ck-banner",width:800,height:324}}),')
+sub('Pf=()=>{["/banner-mx.webp"].forEach(gn)}', 'Pf=()=>{["/banner-ar.webp"].forEach(gn)}')
 replace_block('i.jsxs("div",{className:"mx-metodos"', '"Paga en cualquier tienda · se confirma en unas horas"})]})]})]}),',
     'i.jsx("div",{className:"mx-metodos",children:i.jsxs("div",{className:"mx-metodo mx-metodo-on",children:[i.jsx("span",{className:"mx-metodo-ico",children:"🏦"}),i.jsxs("span",{className:"mx-metodo-txt",children:[i.jsx("b",{children:"Transferencia bancaria"}),i.jsx("small",{children:"Desde la app de tu banco o billetera (Mercado Pago, Ualá, Brubank…)"})]})]})}),')
 sub('i.jsx("b",{children:"al instante"}),"."]})', 'i.jsx("b",{children:"apenas se acredite tu transferencia"}),"."]})')
