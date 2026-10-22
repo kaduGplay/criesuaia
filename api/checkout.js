@@ -1,6 +1,5 @@
 import {catalog,createPayment,status,handleError,PaymentError} from '../lib/payments.js';
-import {catalogMx,createMxPayment} from '../lib/liberpay.js';
-import {catalogAr,createArPayment} from '../lib/argentina.js';
+import {catalogMx,createMxPayment,catalogAr,createArPayment} from '../lib/liberpay.js';
 export default async function handler(req,res){
  res.setHeader('Cache-Control','no-store');
  try{
@@ -8,7 +7,7 @@ export default async function handler(req,res){
   if(req.method==='POST'&&!req.headers['content-type']?.startsWith('application/json'))throw new PaymentError('Envie JSON.',415);
   const origin=req.headers.origin;
   if(origin&&new URL(origin).host!==req.headers.host)throw new PaymentError('Origem inválida.',403);
-  // ?site=mx is the Mexican site (MXN, LiberPay SPEI/OXXO); ?site=ar the Argentine one (ARS, payments not connected yet).
+  // ?site=mx is the Mexican site (MXN, LiberPay SPEI/OXXO); ?site=ar the Argentine one (ARS, LiberPay bank transfer to a CVU).
   const mx=req.query.site==='mx',ar=req.query.site==='ar';
   // The Brazilian funnel is off the air: only the Mexican site sells. Orders already generated keep their status and PIX webhook.
   if(!mx&&!ar&&['products','pix','upsell-pix'].includes(req.query.op))throw new PaymentError('Esta oferta não está mais disponível.',410);

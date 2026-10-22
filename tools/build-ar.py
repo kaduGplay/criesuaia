@@ -3,9 +3,9 @@
 Reads public/assets/index-mx.js and public/mexico/index.html (run
 tools/build-mx.py first) and writes public/assets/index-ar.js,
 public/argentina/index.html and lib/catalog-ar.json: Rioplatense Spanish (voseo),
-prices in ARS and no Mexican payment methods. Argentine payments are not
-connected yet: the checkout shows the offer and the server answers that paying
-is not enabled. Every replacement must match the expected number of times.
+prices in ARS and payment by bank transfer to a CVU (LiberPay), whose
+confirmation takes minutes to hours. Every replacement must match the expected
+number of times.
 Run after the Mexican build:  python3 tools/build-mx.py && python3 tools/build-ar.py
 """
 import json
@@ -17,12 +17,13 @@ ROOT = Path(__file__).resolve().parent.parent
 PUBLIC = ROOT / 'public'
 js = (PUBLIC / 'assets/index-mx.js').read_text()
 
-# Provisional prices in ARS cents, until the real Argentine values arrive.
+# Argentine prices, in ARS cents. The struck-through "before" prices keep the Mexican proportions
+# (the main one matches the 60% OFF badge). LiberPay accepts AR$ 2.000 to AR$ 1.000.000 per charge.
 PRICES = {
-    'main': 790000, 'main_old': 1990000,
-    'bump': 290000, 'bump_old': 790000,
-    'upsells': {'video': (590000, 1290000), 'vip': (1290000, 2990000), 'whatsapp': (890000, None),
-                'memoria': (590000, None), 'album': (490000, None), 'editar': (390000, None)},
+    'main': 749000, 'main_old': 1899000,
+    'bump': 349000, 'bump_old': 899000,
+    'upsells': {'video': (449000, 999000), 'vip': (449000, 999000), 'whatsapp': (449000, None),
+                'memoria': (449000, None), 'album': (449000, None), 'editar': (449000, None)},
 }
 
 
@@ -56,6 +57,8 @@ sub('if(e==="latam")return{url:"",price:"MX$ 99",priceOld:"MX$ 249"};',
 sub('bt=e=>"MX$ "+(e/100).toLocaleString("es-MX",{minimumFractionDigits:0,maximumFractionDigits:2})',
     'bt=e=>"$ "+(e/100).toLocaleString("es-AR",{minimumFractionDigits:0,maximumFractionDigits:2})')
 sub('kv=9900', f'kv={PRICES["bump_old"]}')
+# The Brazilian price table is never reached here (the region is fixed first); it carries no reais anyway.
+sub('price:"R$ 19,90",priceOld:"R$ 49,90"', f'price:"{ars(PRICES["main"])}",priceOld:"{ars(PRICES["main_old"])}"')
 sub('i.jsx("span",{className:"ck-preco-de",children:"MX$ 249"})', f'i.jsx("span",{{className:"ck-preco-de",children:"{ars(PRICES["main_old"])}"}})')
 sub('currency:"MXN"', 'currency:"ARS"', 9)
 sub('value:99', f'value:{PRICES["main"] // 100}', 4)
@@ -133,11 +136,14 @@ sub('"📸 Fotos y vídeos sin límites"', '"📸 Fotos y videos sin límites"')
 # --- Checkout: no Mexican banner (it shows MX$) and no SPEI/OXXO choice ---------------
 sub('i.jsx("img",{src:"/banner-mx.webp",alt:"Oferta relámpago: 60% OFF · de MX$ 249 a solo MX$ 99 · pago 100% seguro",className:"ck-banner",width:800,height:324}),', '')
 sub('Pf=()=>{["/banner-mx.webp"].forEach(gn)}', 'Pf=()=>{}')
-replace_block('i.jsxs("div",{className:"mx-metodos"', '"Paga en cualquier tienda · se confirma en unas horas"})]})]})]}),', '')
+replace_block('i.jsxs("div",{className:"mx-metodos"', '"Paga en cualquier tienda · se confirma en unas horas"})]})]})]}),',
+    'i.jsx("div",{className:"mx-metodos",children:i.jsxs("div",{className:"mx-metodo mx-metodo-on",children:[i.jsx("span",{className:"mx-metodo-ico",children:"🏦"}),i.jsxs("span",{className:"mx-metodo-txt",children:[i.jsx("b",{children:"Transferencia bancaria"}),i.jsx("small",{children:"Desde la app de tu banco o billetera (Mercado Pago, Ualá, Brubank…)"})]})]})}),')
+sub('i.jsx("b",{children:"al instante"}),"."]})', 'i.jsx("b",{children:"apenas se acredite tu transferencia"}),"."]})')
 sub('"Mejora tu experiencia "', '"Mejorá tu experiencia "')
 sub('segundaparceira:"Crea una segunda compañera solo tuya 👯‍♀️"', 'segundaparceira:"Creá una segunda compañera solo tuya 👯‍♀️"')
 sub('" ya está lista y esperándote — genera tu pago y es tuya "', '" ya está lista y esperándote — generá tu pago y es tuya "')
-sub('"🔒 Compra segura · Pago único por SPEI u OXXO"', '"🔒 Compra segura · Pago único en pesos argentinos"')
+sub('"🔒 Compra segura · Pago único por SPEI u OXXO"', '"🔒 Compra segura · Pago único por transferencia bancaria"')
+sub('i.jsx("span",{children:"pago único · SPEI u OXXO"})', 'i.jsx("span",{children:"pago único · transferencia bancaria"})')
 sub('{erro:"Escribe tu nombre.",campo:"name"}', '{erro:"Escribí tu nombre.",campo:"name"}')
 sub('{erro:"Escribe tu correo.",campo:"email"}', '{erro:"Escribí tu correo.",campo:"email"}')
 sub('{erro:"Escribe un correo válido.",campo:"email"}', '{erro:"Escribí un correo válido.",campo:"email"}')
@@ -165,8 +171,49 @@ sub('"Cambiar el cabello y el color"', '"Cambiar el pelo y el color"')
 sub('placeholder:"Tu WhatsApp con lada"', 'placeholder:"Tu WhatsApp con código de área"')
 sub('Pa("Escribe tu WhatsApp con lada para que te escriba.")', 'Pa("Escribí tu WhatsApp con código de área para que te escriba.")')
 
+# --- Payment screens: the CVU to transfer to, the exact amount and the wait --------------
+GARANTIA = 'i.jsxs("div",{className:"ck-garantia",children:[i.jsx("span",{className:"ck-garantia-icone",children:"🛡️"}),i.jsxs("span",{children:[i.jsx("b",{children:"Garantía de 7 días."})," Si no te gusta, te devolvemos tu dinero."]})]})'
+
+
+def step(n, *parts):
+    return 'i.jsxs("div",{children:[i.jsx("b",{children:"' + n + '."})," ",' + ','.join(parts) + ']})'
+
+
+def bold(text):
+    return 'i.jsx("b",{children:' + text + '})'
+
+
+MAIN_STEPS = ','.join([
+    step('1', '"Tocá "', bold('"COPIAR CVU"')),
+    step('2', '"Abrí la app de tu banco o billetera (Mercado Pago, Ualá, Brubank, Naranja X…) y entrá a "', bold('"Transferir"')),
+    step('3', '"Elegí "', bold('"Nuevo destinatario (CBU, CVU o alias)"'), '" y "', bold('"pegá el CVU"')),
+    step('4', '"Transferí el monto exacto: "', bold('bt(T.amount)')),
+    step('5', bold('"Volvé a esta pantalla"'), '": se confirma solo cuando se acredita ✨"')])
+replace_block('if(c==="pix"&&T){const qzOx=T.method==="oxxo"', 'children:"🔒 Pago procesado de forma segura"})]})})}',
+    r'if(c==="pix"&&T){const qzCode=String(T.pixCode).replace(/(\d{4})(?=\d)/g,"$1 ");return i.jsx("div",{className:"ck-screen",children:i.jsxs("div",{className:"ck-card",children:['
+    'i.jsxs("div",{className:"ck-topo-mini",children:[i.jsx("img",{src:Pt,alt:a,className:"ck-avatar",onError:De}),i.jsxs("div",{children:[i.jsx("div",{className:"ck-avatar-nome",children:a}),i.jsxs("div",{className:"ck-avatar-status",children:[i.jsx("span",{className:"ck-dot"})," esperando tu pago…"]})]}),i.jsx("div",{className:"ck-total-mini",children:bt(T.amount)})]}),'
+    'i.jsxs("div",{className:"ck-voltar-aviso",children:[i.jsx("span",{className:"ck-voltar-aviso-ico",children:"↩️"}),i.jsxs("div",{children:[i.jsx("b",{children:"Después de transferir, volvé a esta pantalla."}),i.jsx("br",{}),"La transferencia puede tardar de unos minutos a algunas horas en acreditarse. La confirmación aparece acá sola."]})]}),'
+    'i.jsxs("div",{className:"mx-pago-box",children:[i.jsx("div",{className:"mx-pago-rot",children:"CVU para transferir"}),i.jsx("div",{className:"mx-codigo",children:qzCode}),i.jsxs("div",{className:"mx-monto",children:["Monto exacto: ",i.jsx("b",{children:bt(T.amount)})]}),i.jsx("button",{className:"ck-cta ck-copiar"+(q?" ck-copiado":""),onClick:Zf,children:q?"✓ ¡CVU COPIADO!":"COPIAR CVU"})]}),'
+    'i.jsxs("div",{className:"ck-voltar-aviso",children:[i.jsx("span",{className:"ck-voltar-aviso-ico",children:"⚠️"}),i.jsxs("div",{children:[i.jsxs("b",{children:["Transferí exactamente ",bt(T.amount),"."]})," Con otro monto el pago puede no acreditarse."]})]}),'
+    'i.jsxs("div",{className:"mx-pago-box mx-tuto",children:[i.jsx("div",{className:"mx-pago-rot",children:"Cómo pagar desde tu banco o billetera · 1 minuto"}),i.jsx("div",{className:"ck-pix-passos",children:[' + MAIN_STEPS + ']})]}),'
+    'i.jsxs("div",{className:"ck-voltar-aviso",children:[i.jsx("span",{className:"ck-voltar-aviso-ico",children:"🔒"}),i.jsxs("div",{children:["Tu banco puede mostrar el nombre de ",i.jsx("b",{children:"nuestro procesador de pagos"}),": es normal. Este CVU es solo para este pago."]})]}),'
+    + GARANTIA + ','
+    'i.jsxs("div",{className:"ck-aguardando",children:[i.jsx("span",{className:"ck-spinner"}),"Esperando tu pago… ",Math.floor(G/60),":",String(G%60).padStart(2,"0")]}),'
+    'i.jsx("div",{className:"ck-trust",children:"🔒 Pago procesado de forma segura"})]})})}')
+UPSELL_STEPS = ','.join([
+    step('1', '"Tocá "', bold('"COPIAR CVU"')),
+    step('2', '"En tu banco o billetera: "', bold('"Transferir → Nuevo destinatario"'), '" y pegá el CVU. "', bold('"Es un CVU nuevo"'), '": no uses el del pago anterior"'),
+    step('3', '"Transferí exactamente "', bold('bt(be.amount)'), '" y volvé acá: se confirma solo ✨"')])
+replace_block('if(Et==="pix"&&be){const qzClabe=', 'children:"Saltar y continuar"})]})})}',
+    r'if(Et==="pix"&&be){const qzCvu=String(be.pixCode).replace(/(\d{4})(?=\d)/g,"$1 ");return i.jsx("div",{className:"ck-screen",children:i.jsxs("div",{className:"ck-card",children:['
+    'i.jsxs("div",{className:"ck-topo-mini",children:[i.jsx("img",{src:Pt,alt:"VIP",className:"ck-avatar",onError:De}),i.jsxs("div",{children:[i.jsx("div",{className:"ck-avatar-nome",children:qzCur.short}),i.jsxs("div",{className:"ck-avatar-status",children:[i.jsx("span",{className:"ck-dot"})," esperando tu pago…"]})]}),i.jsx("div",{className:"ck-total-mini",children:bt(be.amount)})]}),'
+    'i.jsxs("div",{className:"mx-pago-box",children:[i.jsx("div",{className:"mx-pago-rot",children:"CVU para transferir"}),i.jsx("div",{className:"mx-codigo",children:qzCvu}),i.jsxs("div",{className:"mx-monto",children:["Monto exacto: ",i.jsx("b",{children:bt(be.amount)})]}),i.jsx("button",{className:"ck-cta ck-copiar"+(vs?" ck-copiado":""),onClick:ep,children:vs?"✓ ¡CVU COPIADO!":"COPIAR CVU"})]}),'
+    'i.jsxs("div",{className:"mx-pago-box mx-tuto",children:[i.jsx("div",{className:"mx-pago-rot",children:"Cómo pagar · 1 minuto"}),i.jsx("div",{className:"ck-pix-passos",children:[' + UPSELL_STEPS + ']})]}),'
+    'i.jsxs("div",{className:"ck-aguardando",children:[i.jsx("span",{className:"ck-spinner"}),"Esperando tu pago… ",Math.floor(Ea/60),":",String(Ea%60).padStart(2,"0")]}),'
+    'i.jsx("button",{type:"button",className:"ck-upsell-pular",onClick:()=>{$("upsell_skipped",{meta:{em:"pix",oferta:qzCur.id}}),qzAdvance()},children:"Saltar y continuar"})]})})}')
+
 # Nothing Mexican may be left on the screens the Argentine buyer can reach today.
-for leftover in ['MX$', 'MXN', 'con lada', 'usa lada', 'ahorita mismo', 'platicaron', 'pláticas', 'site=mx', '"es-MX"', 'banner-mx', 'mx-metodos', 'Pago único por SPEI', '¿Quieres', ' para ti"', 'Elige el nombre', 'Solo tú y']:
+for leftover in ['MX$', 'MXN', 'R$', 'BRL', 'con lada', 'usa lada', 'ahorita mismo', 'platicaron', 'pláticas', 'site=mx', '"es-MX"', 'banner-mx', 'CLABE', 'OXXO', 'SPEI', '¿Quieres', ' para ti"', 'Elige el nombre', 'Solo tú y']:
     if leftover in js:
         sys.exit(f'Mexican text left in the Argentine bundle: {leftover!r}')
 
@@ -177,6 +224,8 @@ for old, new in [('<html lang="es-MX">', '<html lang="es-AR">'), ('<title>Crea t
     if html.count(old) != 1:
         sys.exit(f'html: expected 1x {old!r}')
     html = html.replace(old, new)
+# The 22-digit CVU wraps between its groups of four, never inside one.
+html = html.replace('</head>', '  <style>.mx-codigo{word-break:normal;overflow-wrap:normal}</style>\n  </head>', 1)
 (PUBLIC / 'argentina').mkdir(exist_ok=True)
 (PUBLIC / 'argentina/index.html').write_text(html)
 
