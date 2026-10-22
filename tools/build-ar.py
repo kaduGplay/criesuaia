@@ -81,8 +81,8 @@ sub('"🥰 +50,000 IAs listas para ti"', '"🥰 +50.000 IAs listas para vos"')
 sub('highlight:"37,429",after:" usuarios satisfechos!"', 'highlight:"37.429",after:" usuarios satisfechos!"')
 
 # --- Home picture and quiz, in voseo ----------------------------------------------------
-sub('alt:"Crea tu compañera IA — empieza a crearla ahora",cta:"Empieza a crearla ahora"',
-    'alt:"Creá tu compañera IA — empezá a crearla ahora",cta:"Empezá a crearla ahora"')
+sub('es:{src:"/inicio-mx.webp",alt:"Crea tu compañera IA — empieza a crearla ahora",cta:"Empieza a crearla ahora"}',
+    'es:{src:"/inicio-ar.webp",alt:"Creá tu compañera IA — empezá a crear ahora",cta:"Empezá a crear ahora"}')
 sub('["Crea tu ",i.jsx("span",{className:"quiz-hook-destaque",children:"novia IA"})', '["Creá tu ",i.jsx("span",{className:"quiz-hook-destaque",children:"novia IA"})')
 sub('highlightWords:["ella","tú","tu","personalidad","molesta","silueta"]', 'highlightWords:["ella","vos","tu","personalidad","molesta","silueta"]')
 sub('3:{title:"Define su silueta"', '3:{title:"Definí su silueta"')
@@ -213,14 +213,14 @@ replace_block('if(Et==="pix"&&be){const qzClabe=', 'children:"Saltar y continuar
     'i.jsx("button",{type:"button",className:"ck-upsell-pular",onClick:()=>{$("upsell_skipped",{meta:{em:"pix",oferta:qzCur.id}}),qzAdvance()},children:"Saltar y continuar"})]})})}')
 
 # Nothing Mexican may be left on the screens the Argentine buyer can reach today.
-for leftover in ['MX$', 'MXN', 'R$', 'BRL', 'con lada', 'usa lada', 'ahorita mismo', 'platicaron', 'pláticas', 'site=mx', '"es-MX"', 'banner-mx', 'CLABE', 'OXXO', 'SPEI', '¿Quieres', ' para ti"', 'Elige el nombre', 'Solo tú y']:
+for leftover in ['MX$', 'MXN', 'R$', 'BRL', 'con lada', 'usa lada', 'ahorita mismo', 'platicaron', 'pláticas', 'site=mx', '"es-MX"', 'banner-mx', 'inicio-mx', 'CLABE', 'OXXO', 'SPEI', '¿Quieres', ' para ti"', 'Elige el nombre', 'Solo tú y']:
     if leftover in js:
         sys.exit(f'Mexican text left in the Argentine bundle: {leftover!r}')
 
 (PUBLIC / 'assets/index-ar.js').write_text(js)
 
 html = (PUBLIC / 'mexico/index.html').read_text()
-for old, new in [('<html lang="es-MX">', '<html lang="es-AR">'), ('<title>Crea tu novia IA</title>', '<title>Creá tu novia IA</title>'), ('/assets/index-mx.js?v=', '/assets/index-ar.js?v=')]:
+for old, new in [('<html lang="es-MX">', '<html lang="es-AR">'), ('<title>Crea tu novia IA</title>', '<title>Creá tu novia IA</title>'), ('/assets/index-mx.js?v=', '/assets/index-ar.js?v='), ('href="/inicio-mx.webp"', 'href="/inicio-ar.webp"')]:
     if html.count(old) != 1:
         sys.exit(f'html: expected 1x {old!r}')
     html = html.replace(old, new)
