@@ -97,6 +97,12 @@ sub('{label:"Moño"}', '{label:"Rodete"}')
 sub('{label:"Coletas"}', '{label:"Colitas"}')
 sub('1:{title:"¿Qué será ella para ti?"', '1:{title:"¿Qué va a ser ella para vos?"')
 sub('description:"Entregada por completo, hace todo por ti."', 'description:"Entregada por completo, hace todo por vos."')
+# the offer countdown and the checkout's "reservado por" are one 15-minute window
+sub('[g,m]=w.useState({minutes:6,seconds:0})', '[g,m]=w.useState(()=>{let t=Date.now();try{const s=parseInt(sessionStorage.getItem("ck_promo_inicio"),10);s?t=s:sessionStorage.setItem("ck_promo_inicio",String(t))}catch{}const r=Math.max(0,900-Math.floor((Date.now()-t)/1e3));return{minutes:Math.floor(r/60),seconds:r%60}})')
+# image descriptions in Spanish
+for old, new in [('alt:"Question visual"', 'alt:"Imagen de la pregunta"'), ('alt:"Character preview"', 'alt:"Tu IA"'), ('alt:"Preview 1"', 'alt:"Vista previa 1"'), ('alt:"Preview 2"', 'alt:"Vista previa 2"'), ('alt:"Preview 3"', 'alt:"Vista previa 3"')]:
+    sub(old, new)
+js = js.replace('alt:"CliChat Logo"', 'alt:"CliChat"')
 sub('11:{title:"¿Quieres recibir fotos de ella?"', '11:{title:"¿Querés recibir fotos de ella?"')
 sub('12:{title:"¿Quieres recibir videos también?"', '12:{title:"¿Querés recibir videos también?"')
 
@@ -113,10 +119,12 @@ sub('¿vienes a hablar conmigo?', '¿venís a hablar conmigo?')
 sub('oncePay:"Paga una vez · Sin renovación automática"', 'oncePay:"Pagás una vez · Sin renovación automática"')
 sub('memberTitle:{before:"¡Sé miembro y disfruta de "', 'memberTitle:{before:"¡Hacete miembro y disfrutá de "')
 sub('personalizeTitle:{before:"Personaliza tu IA como quieras, recibe ",highlight:"fotos y vídeos",after:" siempre que lo desees!"}',
-    'personalizeTitle:{before:"Personalizá tu IA como quieras y recibí ",highlight:"fotos y videos",after:" cuando quieras!"}')
+    'personalizeTitle:{before:"¡Personalizá tu IA como quieras y recibí ",highlight:"fotos y videos",after:" cuando quieras!"}')
 sub('joinNow:"¡SÉ MIEMBRO AHORA!"', 'joinNow:"¡HACETE MIEMBRO AHORA!"')
-sub('detail:"(Paga una sola vez);"', 'detail:"(Pagás una sola vez);"')
-sub('detail:"(Solo accede y úsalo);"', 'detail:"(Entrás y lo usás);"')
+sub('detail:"(Paga una sola vez);"', 'detail:"(Pagás una sola vez)"')
+sub('detail:"(Total privacidad);"', 'detail:"(Total privacidad)"')
+sub('{main:"Soporte 24hrs y",detail:"7 días a la semana;"}', '{main:"Soporte",detail:"24 horas, los 7 días de la semana"}')
+sub('detail:"(Solo accede y úsalo);"', 'detail:"(Entrás y la usás)"')
 sub('city:"Ciudad de México"', 'city:"Rosario"')
 sub('city:"Bogotá",text:"Aquí puedo ser quien realmente soy.', 'city:"Córdoba",text:"Acá puedo ser quien realmente soy.')
 sub('howTitle:{before:"¡Descubre ahora "', 'howTitle:{before:"¡Descubrí ahora "')
@@ -224,7 +232,7 @@ UPSELL_STEPS = ','.join([
     step('3', '"Transferí exactamente "', bold('bt(be.amount)'), '" y volvé acá: se confirma solo ✨"')])
 replace_block('if(Et==="pix"&&be){const qzClabe=', 'children:"Saltar y continuar"})]})})}',
     r'if(Et==="pix"&&be){const qzCvu=String(be.pixCode).match(/.{1,4}/g).map((g,n)=>i.jsx("span",{className:"mx-grp",children:g},n));return i.jsx("div",{className:"ck-screen",children:i.jsxs("div",{className:"ck-card",children:['
-    'i.jsxs("div",{className:"ck-topo-mini",children:[i.jsx("img",{src:Pt,alt:"VIP",className:"ck-avatar",onError:De}),i.jsxs("div",{children:[i.jsx("div",{className:"ck-avatar-nome",children:qzCur.short}),i.jsxs("div",{className:"ck-avatar-status",children:[i.jsx("span",{className:"ck-dot"})," esperando tu pago…"]})]}),i.jsx("div",{className:"ck-total-mini",children:bt(be.amount)})]}),'
+    'i.jsxs("div",{className:"ck-topo-mini",children:[i.jsx("img",{src:Pt,alt:qzCur.short,className:"ck-avatar",onError:De}),i.jsxs("div",{children:[i.jsx("div",{className:"ck-avatar-nome",children:qzCur.short}),i.jsxs("div",{className:"ck-avatar-status",children:[i.jsx("span",{className:"ck-dot"})," esperando tu pago…"]})]}),i.jsx("div",{className:"ck-total-mini",children:bt(be.amount)})]}),'
     'i.jsxs("div",{className:"mx-pago-box",children:[i.jsx("div",{className:"mx-pago-rot",children:"CVU para transferir"}),i.jsx("div",{className:"mx-codigo",onClick:A=>qzSel(A.currentTarget),children:qzCvu}),i.jsxs("div",{className:"mx-monto",children:["Monto exacto: ",i.jsx("b",{children:bt(be.amount)})]}),i.jsx("button",{className:"ck-cta ck-copiar"+(vs?" ck-copiado":""),onClick:ep,children:vs?"✓ ¡CVU COPIADO!":"COPIAR CVU"}),qzCf&&i.jsx("div",{className:"mx-copia-falha",role:"status",children:"👆 Mantené presionado el número para copiarlo"})]}),'
     'i.jsxs("div",{className:"mx-pago-box mx-tuto",children:[i.jsx("div",{className:"mx-pago-rot",children:"Cómo pagar · 1 minuto"}),i.jsx("div",{className:"ck-pix-passos",children:[' + UPSELL_STEPS + ']})]}),'
     'i.jsxs("div",{className:"ck-aguardando",children:[i.jsx("span",{className:"ck-spinner"}),"Esperando tu pago… ",Math.floor(Ea/60),":",String(Ea%60).padStart(2,"0")]}),'
@@ -238,7 +246,11 @@ for leftover in ['MX$', 'MXN', 'R$', 'BRL', 'con lada', 'usa lada', 'ahorita mis
 (PUBLIC / 'assets/index-ar.js').write_text(js)
 
 html = (ROOT / 'source/mexico-base/index.html').read_text()
-for old, new in [('<html lang="es-MX">', '<html lang="es-AR">'), ('<title>Crea tu novia IA</title>', '<title>Creá tu novia IA</title>'), ('/assets/index-mx.js?v=', '/assets/index-ar.js?v='), ('href="/inicio-mx.webp"', 'href="/inicio-ar.webp"')]:
+for old, new in [('<html lang="es-MX">', '<html lang="es-AR">'), ('<title>Crea tu novia IA</title>', '<title>Creá tu novia IA</title>'), ('/assets/index-mx.js?v=', '/assets/index-ar.js?v='), ('href="/inicio-mx.webp"', 'href="/inicio-ar.webp"'),
+                 ('content="Crea tu novia IA en minutos: elige cómo es, ponle nombre y descúbrela. 100% privado."', 'content="Creá tu novia IA en minutos: elegí cómo es, ponele nombre y descubrila. 100% privado."'),
+                 ('<meta property="og:title" content="Crea tu novia IA">', '<meta property="og:title" content="Creá tu novia IA">'),
+                 ('content="Elige cómo es, ponle nombre y descúbrela. 100% privado."', 'content="Elegí cómo es, ponele nombre y descubrila. 100% privado."'),
+                 ('https://www.clichat.tech/inicio-mx.webp', 'https://www.clichat.tech/inicio-ar.webp')]:
     if html.count(old) != 1:
         sys.exit(f'html: expected 1x {old!r}')
     html = html.replace(old, new)
