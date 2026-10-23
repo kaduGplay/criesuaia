@@ -142,8 +142,9 @@ sub('Pf=()=>{["/banner-mx.webp"].forEach(gn)}', 'Pf=()=>{["/banner-ar.webp"].for
 replace_block('i.jsxs("div",{className:"mx-metodos"', '"Paga en cualquier tienda · se confirma en unas horas"})]})]})]}),',
     'i.jsx("div",{className:"mx-metodos",children:i.jsxs("div",{className:"mx-metodo mx-metodo-on",children:[i.jsx("span",{className:"mx-metodo-ico",children:"🏦"}),i.jsxs("span",{className:"mx-metodo-txt",children:[i.jsx("b",{children:"Transferencia bancaria"}),i.jsx("small",{children:"Desde la app de tu banco o billetera (Mercado Pago, Ualá, Brubank…)"})]})]})}),')
 sub('i.jsx("b",{children:"al instante"}),"."]})', 'i.jsx("b",{children:"apenas se acredite tu transferencia"}),"."]})')
+sub('children:qzMethod==="oxxo"?"Al tocar ves tu referencia para pagar en OXXO. Todavía no se cobra nada.":"Al tocar ves tu CLABE para transferir desde tu banco. Todavía no se cobra nada."}', 'children:"Al tocar ves tu CVU para transferir desde tu banco o billetera. Todavía no se cobra nada."}')
 sub('segundaparceira:"Crea una segunda compañera solo tuya 👯‍♀️"', 'segundaparceira:"Creá una segunda compañera solo tuya 👯‍♀️"')
-sub('" ya está lista y esperándote — genera tu pago y es tuya "', '" ya está lista y esperándote — generá tu pago y es tuya "')
+sub('" ya está lista y esperándote — desbloquéala y es tuya "', '" ya está lista y esperándote — desbloqueala y es tuya "')
 sub('"🔒 Compra segura · Pago único por SPEI u OXXO"', '"🔒 Compra segura · Pago único por transferencia bancaria"')
 sub('i.jsx("span",{children:"pago único · SPEI u OXXO"})', 'i.jsx("span",{children:"pago único · transferencia bancaria"})')
 sub('{erro:"Escribe tu nombre.",campo:"name"}', '{erro:"Escribí tu nombre.",campo:"name"}')
