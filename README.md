@@ -15,7 +15,7 @@ toque duplo e progresso acessível, sem numeração visível de etapas; início 
 avanço automático após 5 segundos. Os preços continuam MX$ 99 e o pagamento é
 SPEI/OXXO pela LiberPay. Pedidos pendentes e pagamentos anteriores mantêm suas
 chaves de recuperação. O quiz tem estado separado para não confundir posições
-das sete perguntas antigas. O evento `funnel_version` identifica `mx-br-20261022-session-fix`
+das sete perguntas antigas. O evento `funnel_version` identifica `mx-br-20261022-upsells`
 nos dados do funil; nenhum aumento de vendas foi presumido ou medido ainda.
 
 Build: `python3 tools/build-mx.py`. O adaptador `tools/mx-original.py` importa o
@@ -98,3 +98,10 @@ A sequência mexicana anterior de oito upsells foi substituída por uma oferta V
 Mantidas as adaptações regionais: espanhol, MXN, SPEI/OXXO e pixel do México;
 voz em português omitida. Por preferência expressa, o modal não mostra porcentagem
 e o quiz não mostra números de etapa.
+
+
+Teste de checkout simplificado: os dois adicionais foram removidos do formulário.
+A compra principal continua MX$ 99. Só após confirmação do pagamento aparecem,
+separadamente, Llamada de voz (MX$ 39), Segunda compañera (MX$ 39) e VIP (MX$ 149).
+Cada oferta pode ser recusada e só gera cobrança quando o cliente aceita.
+O evento `funnel_version` registra `mx-br-20261022-upsells` para comparação.

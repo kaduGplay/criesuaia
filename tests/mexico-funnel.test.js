@@ -28,9 +28,9 @@ test('nova versão mantém pagamento mexicano, pedidos pendentes e pixel exclusi
  assert.ok(js.includes('Gh="1641698144409525"') && js.includes('currency:"MXN"'));
  assert.ok(js.includes('/api/checkout?op=pix&site=mx'));
  assert.ok(js.includes('onCheckout:t==="latam"?()=>{stopFunnelMedia();h("checkout")}'));
- assert.ok(js.includes('version:"mx-br-20261022-session-fix"'));
+ assert.ok(js.includes('version:"mx-br-20261022-upsells"'));
  const html = read('public/mexico/index.html');
- assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-session-fix'));
+ assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-upsells'));
  assert.ok(!html.includes('trackio') && !html.includes('utmify') && !html.includes('1481680676270423'));
 });
 
@@ -89,11 +89,11 @@ test('ordem original: nome da IA, nome da pessoa, depois revelação',()=>{
  assert.ok(!js.includes('mxPreview'));
 });
 
-test('preparação e estrutura de compra conferidas com o original',()=>{
+test('checkout sem adicionais e antigos bumps oferecidos somente como upsells',()=>{
  const loading=text=>{const a=text.indexOf('dg=({onComplete:');return text.slice(a,text.indexOf(',_o=',a))};
  assert.equal(loading(js),loading(original));
- assert.ok(js.includes('const qzL=qzUps.filter(u=>u.id==="vip")'));
- assert.ok(js.includes('className:"ck-bumps"')&&js.includes('checked:y.has(id)'));
+ assert.ok(js.includes('const qzL=["chamadadevoz","segundaparceira","vip"].map(id=>qzUps.find(u=>u.id===id))'));
+ assert.ok(!js.includes('className:"ck-bumps"')&&!js.includes('checked:y.has(id)'));
  assert.ok(js.includes('[y,j]=w.useState(new Set)'),'adicionais não pré-selecionados');
 });
 

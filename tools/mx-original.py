@@ -8,7 +8,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'source/brasil-2026-10-22/index-BR-QfwKO.js'
-VERSION = 'mx-br-20261022-session-fix'
+VERSION = 'mx-br-20261022-upsells'
 
 
 def between(text, start, end):
@@ -38,15 +38,11 @@ def adapt(js, html):
         end = text.index('},offer:', start) + 1
         return text[start:end]
     js = js.replace(preview_copy(js), preview_copy(original), 1)
-    # Same purchase structure as Brazil: two unchecked optional order bumps,
-    # then one VIP offer after payment. Amounts still come from the MX catalog.
+    # Keep the main checkout at MX$ 99. Offer the former order bumps only
+    # after confirmed payment, then keep the existing VIP offer last.
     old = 'const qzL=e[0]==="anime"?qzUps.filter(u=>u.id!=="video"):qzUps'
     assert old in js
-    js = js.replace(old, 'const qzL=qzUps.filter(u=>u.id==="vip")', 1)
-    form = 'i.jsxs("div",{className:"ck-form",children:['
-    assert js.count(form) == 1
-    bumps = (ROOT / 'tools/mx-order-bumps.js').read_text().strip()
-    js = js.replace(form, bumps + ',' + form, 1)
+    js = js.replace(old, 'const qzL=["chamadadevoz","segundaparceira","vip"].map(id=>qzUps.find(u=>u.id===id))', 1)
     # Import the actual published questions, their complete option sets and
     # translations, rather than recreating them from screenshots.
     questions = between(original, 'tc=[', ',Av=()=>')
