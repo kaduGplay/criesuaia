@@ -8,7 +8,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'source/brasil-2026-10-22/index-BR-QfwKO.js'
-VERSION = 'mx-br-20261022-upsells'
+VERSION = 'mx-br-20261022-sin-whatsapp'
 
 
 def between(text, start, end):
@@ -43,6 +43,13 @@ def adapt(js, html):
     old = 'const qzL=e[0]==="anime"?qzUps.filter(u=>u.id!=="video"):qzUps'
     assert old in js
     js = js.replace(old, 'const qzL=["chamadadevoz","segundaparceira","vip"].map(id=>qzUps.find(u=>u.id===id))', 1)
+    # No hidden required WhatsApp field in the main checkout. The gateway
+    # accepts an empty phone; never substitute somebody else's phone number.
+    phone_input = ',i.jsx("input",{ref:U.phone,type:"tel",inputMode:"tel",autoComplete:"tel",className:"ck-input"+(P==="phone"?" ck-input-erro":""),placeholder:"Tu WhatsApp (ej. 33 1234 5678)",value:k.phone,onChange:A=>Wr("phone",A.target.value)})'
+    phone_validation = 'const n=e.phone.replace(/\\D/g,"");if(n.length<8)return{erro:"Escribe tu número de WhatsApp.",campo:"phone"};'
+    for old, new in [(phone_input, ''), (phone_validation, ''), ('const O=Zu(k);Zt.current=O;', 'const O=Zu({...k,phone:""});Zt.current=O;')]:
+        assert js.count(old) == 1, old
+        js = js.replace(old, new, 1)
     # Import the actual published questions, their complete option sets and
     # translations, rather than recreating them from screenshots.
     questions = between(original, 'tc=[', ',Av=()=>')

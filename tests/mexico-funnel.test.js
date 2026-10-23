@@ -28,9 +28,9 @@ test('nova versão mantém pagamento mexicano, pedidos pendentes e pixel exclusi
  assert.ok(js.includes('Gh="1641698144409525"') && js.includes('currency:"MXN"'));
  assert.ok(js.includes('/api/checkout?op=pix&site=mx'));
  assert.ok(js.includes('onCheckout:t==="latam"?()=>{stopFunnelMedia();h("checkout")}'));
- assert.ok(js.includes('version:"mx-br-20261022-upsells"'));
+ assert.ok(js.includes('version:"mx-br-20261022-sin-whatsapp"'));
  const html = read('public/mexico/index.html');
- assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-upsells'));
+ assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-sin-whatsapp'));
  assert.ok(!html.includes('trackio') && !html.includes('utmify') && !html.includes('1481680676270423'));
 });
 
@@ -111,4 +111,13 @@ test('retomada de sessões antigas não acessa pergunta inexistente',()=>{
  const restored=context.mxQuizState(JSON.stringify({...state,answers:null,characterName:42}),18);
  assert.equal(JSON.stringify(restored.answers),'{}');assert.equal(restored.characterName,'');
  assert.ok(js.includes('mxQuizState(q,tc.filter(q=>q.id!==16).length)'));
+});
+
+
+test('checkout mexicano não pede nem exige telefone para gerar pagamento',()=>{
+ assert.ok(!js.includes('ref:U.phone,type:"tel"'));
+ assert.ok(js.includes('const O=Zu({...k,phone:""});Zt.current=O;'));
+ const start=js.indexOf('Ju=(e,t=!0)=>');const end=js.indexOf(',Zu=',start);
+ const context={jv:()=>false};vm.runInNewContext(js.slice(start,end),context);
+ assert.equal(context.Ju({name:'Carlos',email:'carlos@example.test',phone:'',document:''}),null);
 });
