@@ -28,9 +28,9 @@ test('nova versão mantém pagamento mexicano, pedidos pendentes e pixel exclusi
  assert.ok(js.includes('Gh="1641698144409525"') && js.includes('currency:"MXN"'));
  assert.ok(js.includes('/api/checkout?op=pix&site=mx'));
  assert.ok(js.includes('onCheckout:t==="latam"?()=>{stopFunnelMedia();h("checkout")}'));
- assert.ok(js.includes('version:"mx-br-20261022-original-revisado"'));
+ assert.ok(js.includes('version:"mx-br-20261022-session-fix"'));
  const html = read('public/mexico/index.html');
- assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-original-revisado'));
+ assert.ok(html.includes('lang="es-MX"') && html.includes('index-mx.js?v=mx-br-20261022-session-fix'));
  assert.ok(!html.includes('trackio') && !html.includes('utmify') && !html.includes('1481680676270423'));
 });
 
@@ -95,4 +95,20 @@ test('preparação e estrutura de compra conferidas com o original',()=>{
  assert.ok(js.includes('const qzL=qzUps.filter(u=>u.id==="vip")'));
  assert.ok(js.includes('className:"ck-bumps"')&&js.includes('checked:y.has(id)'));
  assert.ok(js.includes('[y,j]=w.useState(new Set)'),'adicionais não pré-selecionados');
+});
+
+
+test('retomada de sessões antigas não acessa pergunta inexistente',()=>{
+ const context={};vm.runInNewContext(read('tools/mx-quiz-state.js'),context);
+ const state={phase:'questions',currentQuestion:18,answers:{0:'normal'},characterName:'Luna',ts:Date.now()};
+ for(const [value,want] of [[18,17],[999,17],[-1,0],['18',0],[null,0],[17,17]]){
+  const restored=context.mxQuizState(JSON.stringify({...state,currentQuestion:value}),18);
+  assert.equal(restored.currentQuestion,want);assert.equal(restored.characterName,'Luna');
+ }
+ assert.equal(context.mxQuizState('{',18),null);
+ assert.equal(context.mxQuizState(JSON.stringify({...state,phase:'invalid'}),18),null);
+ assert.equal(context.mxQuizState(JSON.stringify({...state,ts:1}),18),null);
+ const restored=context.mxQuizState(JSON.stringify({...state,answers:null,characterName:42}),18);
+ assert.equal(JSON.stringify(restored.answers),'{}');assert.equal(restored.characterName,'');
+ assert.ok(js.includes('mxQuizState(q,tc.filter(q=>q.id!==16).length)'));
 });

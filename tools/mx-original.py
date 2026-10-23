@@ -8,7 +8,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'source/brasil-2026-10-22/index-BR-QfwKO.js'
-VERSION = 'mx-br-20261022-original-revisado'
+VERSION = 'mx-br-20261022-session-fix'
 
 
 def between(text, start, end):
@@ -22,6 +22,7 @@ def adapt(js, html):
     original = SOURCE.read_text()
     # Separate email, visitor name and character name, using Mexican copy.
     modal = (ROOT / 'tools/mx-lead-modal.js').read_text().strip()
+    modal += ',' + (ROOT / 'tools/mx-quiz-state.js').read_text().strip()
     js = js.replace(between(js, 'cg=({onDone:', ',dg='), modal, 1)
     js = js.replace('||"sua namorada"', '||"tu novia"')
     # Restore the original preparation illustration and the two original name
@@ -68,9 +69,11 @@ def adapt(js, html):
     js = js.replace(old_renderer, renderer, 1)
 
     root = original[original.index('Av=()=>'):]
+    state_start = 'const Q=JSON.parse(q);return!Q||!Q.phase||!Q.ts||Date.now()-Q.ts>6*60*60*1e3?null:((Q.phase==="chat"||Q.phase==="offer")&&(Q.phase=Yu?"chat":"offer"),Q)'
+    assert root.count(state_start) == 1
+    root = root.replace(state_start, 'return mxQuizState(q,tc.filter(q=>q.id!==16).length)', 1)
     replacements = {
         'd="nq_quiz_state"': 'd="nq_quiz_state_mx_br_v1"',
-        'Date.now()-Q.ts>6*60*60*1e3': 'Date.now()-Q.ts>72*60*60*1e3',
         'Rt("ViewContent"': 'vt("ViewContent"',
         'value:19.9,currency:"BRL"': 'value:99,currency:"MXN"',
         'onCheckout:t==="br"?()=>h("checkout")':
