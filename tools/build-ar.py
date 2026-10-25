@@ -16,6 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PUBLIC = ROOT / 'public'
 js = (ROOT / 'source/mexico-base/index-mx.js').read_text()
+js = js.replace('"rich-girl":"Chica fresa"', '"rich-girl":"Chica cheta"').replace('"cheerleader":"Porrista"', '"cheerleader":"Animadora"')
 
 # Argentine prices, in ARS cents. The struck-through "before" prices keep the Mexican proportions
 # (the main one matches the 60% OFF badge). LiberPay accepts AR$ 2.000 to AR$ 1.000.000 per charge.
