@@ -141,7 +141,7 @@ test('perfil usa três esteiras horizontais e preserva a escolha ao navegar', ()
  const rows=tree.props.children.slice(1);
  assert.equal(rows.length,3);
  assert.equal(rows[0].props.group.options.length,10);
- assert.equal(rows[2].props.group.options.length,8);
+ assert.equal(rows[2].props.group.options.length,20);
  assert.equal(rows[2].props.group.options.find(o=>o.value==='waitress').label,'☕ Camarera');
  const rendered=qzProfileRail(rows[2].props), track=rendered.props.children[1];
  assert.equal(track.props.style.overflowX,'auto');
