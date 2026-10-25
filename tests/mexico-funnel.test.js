@@ -17,7 +17,7 @@ test('México usa todas as perguntas e opções do original brasileiro capturado
  assert.deepEqual(current.filter(q=>q.id!==16).map(q=>q.id), [0,2,3,4,5,6,7,8,9,10,18,1,11,12,13,14,15,17]);
  const listExpression=js.slice(js.indexOf('I=w.useMemo(()=>')+'I=w.useMemo(()=>'.length,js.indexOf(',[t]);w.useEffect',js.indexOf('I=w.useMemo(()=>')));
  const steps=vm.runInNewContext(listExpression,{tc:current,t:'latam'});
- assert.deepEqual(Array.from(steps,q=>q.id),[0,2,3,7,10,18,1,11,12,13,14,15,17]);
+ assert.deepEqual(Array.from(steps,q=>q.id),[0,2,3,7,10,18,1,13,14,15,17,11,12]);
  assert.equal(steps.find(q=>q.id===7).type,'appearance');
  assert.equal(steps.find(q=>q.id===3).type,'body');
  assert.ok(js.includes('[3,4,5].every(id=>!!x[id])'));
@@ -29,7 +29,7 @@ test('México usa todas as perguntas e opções do original brasileiro capturado
 });
 
 test('nova versão mantém pagamento mexicano, pedidos pendentes e pixel exclusivo', () => {
- assert.ok(js.includes('d="nq_quiz_state_mx_br_v3"'), 'não mistura posições do questionário antigo');
+ assert.ok(js.includes('d="nq_quiz_state_mx_br_v4"'), 'não mistura posições do questionário antigo');
  assert.ok(js.includes('ra="ck_pix_mx"') && js.includes('fi="ck_pago_mx"'), 'mantém retomada de pagamentos');
  assert.ok(js.includes('Gh="1641698144409525"') && js.includes('currency:"MXN"'));
  assert.ok(js.includes('/api/checkout?op=pix&site=mx'));

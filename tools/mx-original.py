@@ -76,7 +76,7 @@ def adapt(js, html):
     assert root.count(state_start) == 1
     root = root.replace(state_start, 'return mxQuizState(q,tc.filter(q=>![4,5,6,8,9,16].includes(q.id)).length)', 1)
     replacements = {
-        'd="nq_quiz_state"': 'd="nq_quiz_state_mx_br_v3"',
+        'd="nq_quiz_state"': 'd="nq_quiz_state_mx_br_v4"',
         'Rt("ViewContent"': 'vt("ViewContent"',
         'value:19.9,currency:"BRL"': 'value:99,currency:"MXN"',
         'onCheckout:t==="br"?()=>h("checkout")':
@@ -109,6 +109,6 @@ def adapt(js, html):
     html = re.sub(r'<!--.*?-->', '', html, flags=re.S)
     html = re.sub(r'\n\s*\n', '\n', html)
     assert 'onCheckout:t==="br"' not in js
-    assert 'd="nq_quiz_state_mx_br_v3"' in js
+    assert 'd="nq_quiz_state_mx_br_v4"' in js
     assert 'tc.filter(q=>q.id!==16)' in js
     return js, html
