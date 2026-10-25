@@ -129,3 +129,29 @@ test('checkout mexicano não pede nem exige telefone para gerar pagamento',()=>{
  const context={jv:()=>false};vm.runInNewContext(js.slice(start,end),context);
  assert.equal(context.Ju({name:'Carlos',email:'carlos@example.test',phone:'',document:''}),null);
 });
+
+test('perfil usa três esteiras horizontais e preserva a escolha ao navegar', () => {
+ const start=js.indexOf('qzProfileRail='), end=js.indexOf(',qzAppearanceRail=',start);
+ const calls=[], scrolling=[], rail={clientWidth:320,scrollBy:value=>scrolling.push(value),scrollTo:value=>scrolling.push(value)};
+ const element=(type,props,key)=>({type,props,key});
+ const {qzProfileStep,qzProfileRail}=vm.runInNewContext('(()=>{const '+js.slice(start,end)+';return {qzProfileStep,qzProfileRail}})()',{
+  w:{useRef:()=>({current:rail})},i:{jsx:element,jsxs:element}
+ });
+ const tree=qzProfileStep({questions:questions(js),answers:{19:'nurse'},onPick:(...args)=>calls.push(args),lang:'es',country:'AR'});
+ const rows=tree.props.children.slice(1);
+ assert.equal(rows.length,3);
+ assert.equal(rows[0].props.group.options.length,10);
+ assert.equal(rows[2].props.group.options.length,8);
+ assert.equal(rows[2].props.group.options.find(o=>o.value==='waitress').label,'☕ Camarera');
+ const rendered=qzProfileRail(rows[2].props), track=rendered.props.children[1];
+ assert.equal(track.props.style.overflowX,'auto');
+ assert.equal(track.props.style.scrollSnapType,'x mandatory');
+ const nurse=track.props.children.find(card=>card.key==='job-nurse');
+ assert.equal(nurse.props['aria-pressed'],true);
+ nurse.props.onClick({currentTarget:{offsetLeft:284,offsetWidth:132}});
+ assert.deepEqual(calls,[[19,'nurse']]);
+ const arrows=rendered.props.children[0].props.children[2].props.children;
+ arrows[1].props.onClick();
+ assert.equal(scrolling.at(-1).left,152);
+ assert.equal(calls.length,1,'deslizar não troca a seleção');
+});
