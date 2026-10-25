@@ -155,3 +155,22 @@ test('perfil usa três esteiras horizontais e preserva a escolha ao navegar', ()
  assert.equal(scrolling.at(-1).left,152);
  assert.equal(calls.length,1,'deslizar não troca a seleção');
 });
+
+test('ajustes de personalidade preservam os demais e podem voltar ao equilíbrio', () => {
+ const start=js.indexOf('qzPersonalityTuning='),end=js.indexOf(',qzProfileRail=',start),changes=[];
+ const element=(type,props,key)=>({type,props,key});
+ const render=vm.runInNewContext('('+js.slice(start+'qzPersonalityTuning='.length,end)+')',{
+  Yt:()=>({lang:'es'}),i:{jsx:element,jsxs:element}
+ });
+ const axes=questions(js).find(q=>q.id===14).sliderAxes;
+ const tree=render({axes,value:{'personality-2':70},onChange:value=>changes.push(JSON.parse(JSON.stringify(value)))});
+ const cards=tree.props.children.slice(1,-1);
+ assert.equal(cards.length,4);
+ const slider=cards[0].props.children[1];
+ assert.ok(slider.props['aria-label'].includes(axes[0].left));
+ slider.props.onChange({target:{value:'25'}});
+ assert.equal(changes[0]['personality-1'],25);
+ assert.equal(changes[0]['personality-2'],70);
+ tree.props.children.at(-1).props.onClick();
+ assert.ok(Object.values(changes[1]).every(value=>value===50));
+});
