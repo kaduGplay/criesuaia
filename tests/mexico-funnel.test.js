@@ -174,3 +174,20 @@ test('ajustes de personalidade preservam os demais e podem voltar ao equilíbrio
  tree.props.children.at(-1).props.onClick();
  assert.ok(Object.values(changes[1]).every(value=>value===50));
 });
+
+test('trocar de pergunta volta ao topo do conteúdo interno e da página', () => {
+ const start=js.indexOf('w.useLayoutEffect(()=>{if(m!=="questions")'),end=js.indexOf('},[m,v])',start)+'},[m,v])'.length;
+ const calls=[],frames=[],cancelled=[];
+ const cleanup=vm.runInNewContext(js.slice(start,end),{
+  m:'questions',v:1,HTMLElement:class {},
+  document:{activeElement:null,querySelector:selector=>selector==='.quiz-content'?{scrollTo:value=>calls.push(['content',value.top])}:null},
+  window:{scrollTo:value=>calls.push(['window',value.top])},
+  requestAnimationFrame:fn=>{frames.push(fn);return 7},cancelAnimationFrame:id=>cancelled.push(id),
+  w:{useLayoutEffect:fn=>fn()}
+ });
+ assert.deepEqual(calls,[['content',0],['window',0]]);
+ frames[0]();
+ assert.equal(calls.length,4);
+ cleanup();
+ assert.deepEqual(cancelled,[7]);
+});
