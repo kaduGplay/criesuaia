@@ -83,7 +83,7 @@ sub('Pv=({onStart:e})=>{const{lang:t}=Yt(),n=ec[t]??ec.pt;return',
 # (an unanswered style is never "anime").
 sub('qzOrder=[0,10,3,7,8,1,11,12]', 'qzOrder=[10,3,7,8,1,11,12]')
 sub('highlightWords:["ella","tú","tu","personalidad","molesta"]', 'highlightWords:["ella","tú","tu","personalidad","molesta","silueta"]')
-sub('0:{title:"Elige su estilo",options:{"style-1":{label:"Normal"}', '0:{title:"Elige su estilo",options:{"style-1":{label:"Realista"}')
+sub('0:{title:"¿Cómo imaginas a tu chica ideal?",options:{"style-1":{label:"Normal"}', '0:{title:"¿Cómo imaginas a tu chica ideal?",options:{"style-1":{label:"Realista"}')
 sub('3:{title:"¿Cómo es su cuerpo?"', '3:{title:"Define su silueta"')
 sub('["Crie sua ",i.jsx("span",{className:"quiz-hook-destaque",children:"namorada IA"})," em 40 segundos"]',
     '["Crea tu ",i.jsx("span",{className:"quiz-hook-destaque",children:"novia IA"})," en 40 segundos"]')
